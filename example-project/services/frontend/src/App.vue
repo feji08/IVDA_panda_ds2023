@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
-      <h2>Ruijie Wang 22-748-164</h2>
+      <h2>Stock Exploring</h2>
     </v-app-bar>
     <v-main>
       <ConfigurationPanel/>
