@@ -1,27 +1,27 @@
 <template>
-  <div>
-    <v-row align="center" justify="center" class="mt-0.5 mb-0">
-      <h3>Related view of attributes</h3>
-    </v-row>
-    <div>
-      <v-network-graph class="graph-container"
-                       v-model:selected-nodes="selectedNodes"
+  <v-network-graph v-model:selected-nodes="selectedNodes"
                        :nodes="nodes" :edges="edges"
                        :configs="configs" />
-    </div>
-  </div>
 </template>
 
 <script setup>
 import { VNetworkGraph } from "v-network-graph";
 import "v-network-graph/lib/style.css";
 import * as vNG from "v-network-graph"
-import { onMounted, ref, reactive } from "vue";
+import { onMounted, ref, reactive, defineProps } from "vue";
+
+const props = defineProps({
+  ScaleRatio: Number,
+});
 
 const selectedNodes = ref([]);
 const configs = reactive(vNG.getFullConfigs())
-configs.node.selectable = 2
-configs.edge.normal.width = (edge) => edge.width;
+configs.node.selectable = 2;
+
+const defaultNodeRadius = 8;
+configs.node.normal.radius = defaultNodeRadius * props.ScaleRatio;
+configs.edge.normal.width = (edge) => edge.width * props.ScaleRatio;
+configs.node.label.visible = props.ScaleRatio==1;
 configs.edge.normal.color = (edge) => edge.color;
 configs.edge.normal.dashed = (edge) => edge.dashed; // currently not working
 
@@ -61,10 +61,5 @@ const fetchData = async () => {
 onMounted(fetchData);
 </script>
 
-<style scoped>
-.graph-container {
-  width: 100%;
-  height: 500px;
-  border: 1px solid #adaaaa;
-}
+<style>
 </style>

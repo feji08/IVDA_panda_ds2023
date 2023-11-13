@@ -54,7 +54,7 @@
           </v-row>
         </v-col>
         <v-col cols="12" md="5">
-          <NetWorkGraph/>
+          <NetWorkGraphCombo/>
         </v-col>
         <v-col cols="12" md="4">
           <RightBar/>
@@ -64,10 +64,10 @@
   </div>
 </template>
 <script>
-import NetWorkGraph from './NetWorkGraph';
+import NetWorkGraphCombo from './NetWorkGraphCombo.vue';
 import RightBar from './RightBar';
 export default {
-  components: {NetWorkGraph, RightBar},
+  components: {NetWorkGraphCombo, RightBar},
   data: () => ({
     selectedRange: [2021, 2023],
     indicators: {
