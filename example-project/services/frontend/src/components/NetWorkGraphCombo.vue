@@ -4,7 +4,7 @@
       <h3>Related view of attributes</h3>
     </v-row>
     <div class="network-graph-container">
-      <NetWorkGraph ScaleRatio=1 />
+      <NetWorkGraph scaleRatio=1 />
       <div class="network-graph-small">
         <NetWorkGraphSmall/>
       </div>
@@ -33,7 +33,8 @@ export default {
   bottom: 0;
   right: 0;
   height: 30%;
-  width: 40%;
+  width: 30%;
+  background: #fdfdfd;
   border: 2px solid #adaaaa;
 }
 </style>

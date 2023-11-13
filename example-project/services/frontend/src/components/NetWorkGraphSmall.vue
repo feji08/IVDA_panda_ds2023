@@ -1,6 +1,6 @@
 <template>
   <div class="graph-container" ref="container">
-    <NetWorkGraph ScaleRatio="0.4" />
+    <NetWorkGraph overview="true" scaleRatio="0.4" />
     <div
         class="draggable-rectangle"
         @mousedown="startDragging"

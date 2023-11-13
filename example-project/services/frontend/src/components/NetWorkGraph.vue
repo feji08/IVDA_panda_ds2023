@@ -1,7 +1,7 @@
 <template>
   <v-network-graph v-model:selected-nodes="selectedNodes"
-                       :nodes="nodes" :edges="edges"
-                       :configs="configs" />
+                   :nodes="nodes" :edges="edges" :layouts="layouts"
+                   :configs="configs" />
 </template>
 
 <script setup>
@@ -11,7 +11,8 @@ import * as vNG from "v-network-graph"
 import { onMounted, ref, reactive, defineProps } from "vue";
 
 const props = defineProps({
-  ScaleRatio: Number,
+  overview: Boolean,
+  scaleRatio: Number,
 });
 
 const selectedNodes = ref([]);
@@ -19,11 +20,13 @@ const configs = reactive(vNG.getFullConfigs())
 configs.node.selectable = 2;
 
 const defaultNodeRadius = 8;
-configs.node.normal.radius = defaultNodeRadius * props.ScaleRatio;
-configs.edge.normal.width = (edge) => edge.width * props.ScaleRatio;
-configs.node.label.visible = props.ScaleRatio==1;
+configs.view.scalingObjects = true;
+configs.view.autoPanAndZoomOnLoad = "fit-content";
+configs.node.normal.radius = defaultNodeRadius * props.scaleRatio;
+configs.edge.normal.width = (edge) => edge.width * props.scaleRatio;
 configs.edge.normal.color = (edge) => edge.color;
 configs.edge.normal.dashed = (edge) => edge.dashed; // currently not working
+configs.node.label.visible = !props.overview;
 
 // fake data
 const nodes = {
@@ -36,6 +39,15 @@ const edges = {
   edge1: { source: "node1", target: "node2", width: 1, color: "orange", dashed: true  },
   edge2: { source: "node2", target: "node3", width: 5, color: "gray", dashed: true },
   edge3: { source: "node3", target: "node4", width: 1, color: "black", dashed: false },
+};
+
+const layouts = {
+  nodes: {
+    node1: { x: 0, y: 0 },
+    node2: { x: 50, y: 50 },
+    node3: { x: 100, y: 0 },
+    node4: { x: 150, y: 50 },
+  },
 };
 const fetchData = async () => {
   try {
@@ -58,7 +70,9 @@ const fetchData = async () => {
     console.error('Error fetching data from the backend:', error);
   }
 };
-onMounted(fetchData);
+onMounted(() => {
+  fetchData();
+});
 </script>
 
 <style>
