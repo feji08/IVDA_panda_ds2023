@@ -1,6 +1,6 @@
 <template>
   <div class="graph-container" ref="container">
-    <NetWorkGraph overview="true" scaleRatio="0.4" />
+    <NetWorkGraph :overview=true :scaleRatio=0.4 :rectangle=rectangle />
     <div
         class="draggable-rectangle"
         @mousedown="startDragging"
@@ -30,6 +30,7 @@ export default {
       startY: 0,
       ContainerWidth: 0,
       ContainerHeight: 0,
+      rectangle: {left:0,top:0,right:0,bottom:0}
     };
   },
   mounted() {
@@ -41,9 +42,6 @@ export default {
       const containerRect = container.getBoundingClientRect();
       this.ContainerWidth = containerRect.right - containerRect.left;
       this.ContainerHeight = containerRect.bottom - containerRect.top;
-      console.log(`Container X: ${containerRect.left} - ${containerRect.right},
-      Y: ${containerRect.top} - ${containerRect.bottom}`)
-      console.log(`Width: ${this.ContainerWidth}, Height: ${this.ContainerHeight}`)
     },
     startDragging(event) {
       this.isDragging = true;
@@ -63,8 +61,12 @@ export default {
         if (newTop >= 0 && newTop + this.rectangleHeight <= this.ContainerHeight) {
           this.rectanglePosition.top = newTop;
         }
-        console.log(`X: ${newLeft}, Y: ${newTop}`);
-        console.log(`X: ${0} - ${this.ContainerWidth}, Y: ${0} - ${this.ContainerHeight}`)
+        this.rectangle = {
+          left:this.rectanglePosition.left,
+          top:this.rectanglePosition.top,
+          right:this.rectanglePosition.left+this.rectangleWidth,
+          bottom:this.rectanglePosition.top+this.rectangleHeight,
+        }
       }
     },
     stopDragging() {

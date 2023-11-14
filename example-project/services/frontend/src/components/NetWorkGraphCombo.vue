@@ -4,7 +4,7 @@
       <h3>Related view of attributes</h3>
     </v-row>
     <div class="network-graph-container">
-      <NetWorkGraph scaleRatio=1 />
+      <NetWorkGraph :overview=false :scaleRatio=1 />
       <div class="network-graph-small">
         <NetWorkGraphSmall/>
       </div>

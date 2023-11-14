@@ -1,18 +1,21 @@
 <template>
   <v-network-graph v-model:selected-nodes="selectedNodes"
                    :nodes="nodes" :edges="edges" :layouts="layouts"
-                   :configs="configs" />
+                   :configs="configs" ref="graph"/>
 </template>
 
 <script setup>
 import { VNetworkGraph } from "v-network-graph";
 import "v-network-graph/lib/style.css";
 import * as vNG from "v-network-graph"
-import { onMounted, ref, reactive, defineProps } from "vue";
+import {onMounted, ref, reactive, defineProps, watchEffect} from "vue";
+
+const graph = ref(null);
 
 const props = defineProps({
   overview: Boolean,
   scaleRatio: Number,
+  rectangle: Object,
 });
 
 const selectedNodes = ref([]);
@@ -70,8 +73,18 @@ const fetchData = async () => {
     console.error('Error fetching data from the backend:', error);
   }
 };
+const getGraph = () => {
+  if(props.overview && graph.value){
+    const point = {x:props.rectangle.left,y:props.rectangle.top};
+    const svg = graph.value.translateFromDomToSvgCoordinates(point);
+    console.log(`x:${svg.x},y:${svg.y}`);
+  }
+}
 onMounted(() => {
   fetchData();
+  watchEffect(() => {
+    getGraph();
+  });
 });
 </script>
 
