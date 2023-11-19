@@ -11,6 +11,7 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from statsmodels.tsa.ar_model import AutoReg
+import networkx as nx
 
 # Configure Flask & Flask-PyMongo:
 app = Flask(__name__)
@@ -154,7 +155,72 @@ class StocksCoefficient(Resource):
 
         return jsonify({"coefficients": coefficients})
 
+class NetworkLayout(Resource):
+    def get(self):
+        json_data = request.get_json()
+        time_conditions = json_data.get("time", [])
+        attribute_conditions = json_data.get("attributes", {})
+        date_objects = [datetime.strptime(date_str, "%Y-%m") for date_str in time_conditions]
+        date_query = {"date": {"$gte": date_objects[0], "$lte": date_objects[1]}}
+        attribute_queries = []
+        attribute_name = []
+
+        for attr, details in attribute_conditions.items():
+            if "name" in details and "range" in details:
+                query = {details["name"]: {"$gte": details["range"][0], "$lte": details["range"][1]}}
+                attribute_queries.append(query)
+                attribute_name.append(details["name"])
+
+        query = {"$and": [date_query] + attribute_queries}
+        result = list(stocks.find(query))  # 执行查询并指定返回的字段
+        df = pd.DataFrame(result)
+        df = df[['price', 'revenue', 'netIncome', 'researchAndDdevelopementToRevenue', 'researchAndDevelopmentExpenses',
+                 'assetTurnover', 'eps', 'grahamNumber', 'grossProfit', 'grossProfitMargin', 'interestCoverage',
+                 'cashFlowToDebtRatio', 'operatingIncome', 'bookValuePerShare', 'operatingCashFlowPerShare',
+                 'tangibleAssetValue', 'workingCapital', 'priceToSalesRatio']]
+
+        for col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+
+        corr_matrix = df.corr()
+        # print("corr_matrix:", corr_matrix)
+
+        # create network graph
+        G = nx.Graph()
+
+        # add nodes
+        for var in corr_matrix.columns:
+            G.add_node(var)
+
+        # add edges, only when corresponding correlation is greater than 0.3
+        threshold = 0.3
+
+        for i in range(len(corr_matrix.columns)):
+            for j in range(i + 1, len(corr_matrix.columns)):
+                if abs(corr_matrix.iloc[i, j]) > threshold:
+                    G.add_edge(corr_matrix.columns[i], corr_matrix.columns[j], weight=corr_matrix.iloc[i, j])
+
+        # attribute coordinates for each nodes
+        pos = nx.spring_layout(G)
+
+        nodes = {}
+        for i, node in enumerate(G.nodes(), 1):
+            nodes[f"node{i}"] = {"name": node, "x": pos[node][0], "y": pos[node][1]}
+
+        edges = {}
+        for i, edge in enumerate(G.edges(data=True), 1):
+            edges[f"edge{i}"] = {"source": edge[0], "target": edge[1], "width": edge[2]['weight']}
+
+        print("Nodes List:", nodes)
+        print("Edges List:", edges)
+        print("---------------------")
+
+        return jsonify({
+            "nodes": nodes,
+            "edges": edges
+        })
 
 api.add_resource(StocksPrice, '/companies')
 api.add_resource(StocksAttributes, '/histogram')
 api.add_resource(StocksCoefficient, '/barchart')
+api.add_resource(NetworkLayout, '/networkGraph/layout')
