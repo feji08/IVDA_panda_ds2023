@@ -51,7 +51,7 @@ class TestYourApp(unittest.TestCase):
                     "range": [0, 1]
                 }
             },
-            "nodes":  ["returnOnAssets", "grossProfitMargin"],
+            "nodes": ["returnOnAssets", "grossProfitMargin"],
             "indicator": "price",
             "algorithm": "PCA"
         })
@@ -87,8 +87,55 @@ class TestYourApp(unittest.TestCase):
 
         # 检查其他预期结果
         print(response.get_json())
+        print("---------------------")
 
+    def test_Network_Add_Node(self):
+        # only after calling the NetworkLayout API, will app.config["xxx"] in NetworkAddNode API be successfully set.
+        self.app.get('/networkGraph/layout', json={
+            "time": ["2010-01", "2022-10"],
+            "attributes": {
+                "attribute1": {
+                    "name": "price",
+                    "range": [10, 20]
+                },
+                "attribute2": {
+                    "name": "roe",
+                    "range": [0, 1]
+                },
+                "attribute3": {
+                    "name": "roic",
+                    "range": [0, 1]
+                }
+            }
+        })
 
+        response = self.app.get('/networkGraph/newNode', json={
+            "time": ["2010-01", "2022-10"],
+            "attributes": {
+                "attribute1": {
+                    "name": "price",
+                    "range": [10, 20]
+                },
+                "attribute2": {
+                    "name": "roe",
+                    "range": [0, 1]
+                },
+                "attribute3": {
+                    "name": "roic",
+                    "range": [0, 1]
+                }
+            },
+            "nodes": ["netIncome", "revenue"],
+            "indicator": "price",
+            "algorithm": "PCA"
+        })
+
+        # 检查响应状态码
+        self.assertEqual(response.status_code, 200)  # 例如，检查响应状态码是否为 200
+
+        # 检查其他预期结果
+        print(response.get_json())
+        print("---------------------")
 
 if __name__ == '__main__':
     unittest.main()

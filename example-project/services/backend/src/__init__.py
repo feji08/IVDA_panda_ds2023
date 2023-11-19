@@ -12,6 +12,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from statsmodels.tsa.ar_model import AutoReg
 import networkx as nx
+from copy import deepcopy
 
 # Configure Flask & Flask-PyMongo:
 app = Flask(__name__)
@@ -24,7 +25,9 @@ pymongo = PyMongo(app)
 # Get a reference to the stocks collection.
 stocks: Collection = pymongo.db.stocks
 api = Api(app)
-
+app.config["nodes"] = {}
+app.config["edges"] = {}
+app.config["NETWORK_GRAPH"] = nx.Graph()
 
 class StocksPrice(Resource):
     def get(self):
@@ -157,6 +160,7 @@ class StocksCoefficient(Resource):
 
 class NetworkLayout(Resource):
     def get(self):
+        global app
         json_data = request.get_json()
         time_conditions = json_data.get("time", [])
         attribute_conditions = json_data.get("attributes", {})
@@ -172,7 +176,7 @@ class NetworkLayout(Resource):
                 attribute_name.append(details["name"])
 
         query = {"$and": [date_query] + attribute_queries}
-        result = list(stocks.find(query))  # 执行查询并指定返回的字段
+        result = list(stocks.find(query))
         df = pd.DataFrame(result)
         df = df[['price', 'revenue', 'netIncome', 'researchAndDdevelopementToRevenue', 'researchAndDevelopmentExpenses',
                  'assetTurnover', 'eps', 'grahamNumber', 'grossProfit', 'grossProfitMargin', 'interestCoverage',
@@ -193,7 +197,7 @@ class NetworkLayout(Resource):
             G.add_node(var)
 
         # add edges, only when corresponding correlation is greater than 0.3
-        threshold = 0.3
+        threshold = 0.5
 
         for i in range(len(corr_matrix.columns)):
             for j in range(i + 1, len(corr_matrix.columns)):
@@ -207,13 +211,102 @@ class NetworkLayout(Resource):
         for i, node in enumerate(G.nodes(), 1):
             nodes[f"node{i}"] = {"name": node, "x": pos[node][0], "y": pos[node][1]}
 
-        edges = {}
+        edges= {}
         for i, edge in enumerate(G.edges(data=True), 1):
             edges[f"edge{i}"] = {"source": edge[0], "target": edge[1], "width": edge[2]['weight']}
 
-        print("Nodes List:", nodes)
-        print("Edges List:", edges)
-        print("---------------------")
+        app.config["nodes"] = deepcopy(nodes)
+        app.config["edges"] = deepcopy(edges)
+        app.config["NETWORK_GRAPH"] = deepcopy(G)
+
+        print("Nodes List:", app.config["nodes"])
+        print("Edges List:", app.config["edges"])
+
+        return jsonify({
+            "nodes": nodes,
+            "edges": edges
+        })
+
+def calculate_middle_point(pos1, pos2):
+    return [(pos1[0] + pos2[0]) / 2, (pos1[1] + pos2[1]) / 2]
+
+def adjust_position(pos, existing_positions, delta=0.03):
+    adjusted_pos = pos[:]
+    while any(all(abs(adjusted_pos[i] - p[i]) < delta for i in range(2)) for p in existing_positions):
+        adjusted_pos[0] += delta
+        adjusted_pos[1] += delta
+    return adjusted_pos
+
+class NetworkAddNode(Resource):
+    def get(self):
+        global app
+        json_data = request.get_json()
+        time_conditions = json_data.get("time", [])
+        attribute_conditions = json_data.get("attributes", {})
+        node_1 = json_data.get("nodes", [])[0]
+        node_2 = json_data.get("nodes", [])[1]
+        indicator = json_data.get("indicator")
+        algorithm = json_data.get("algorithm")
+
+        date_objects = [datetime.strptime(date_str, "%Y-%m") for date_str in time_conditions]
+        date_query = {"date": {"$gte": date_objects[0], "$lte": date_objects[1]}}
+        attribute_queries = []
+        attribute_name = []
+
+        for attr, details in attribute_conditions.items():
+            if "name" in details and "range" in details:
+                query = {details["name"]: {"$gte": details["range"][0], "$lte": details["range"][1]}}
+                attribute_queries.append(query)
+                attribute_name.append(details["name"])
+
+        query = {"$and": [date_query] + attribute_queries}
+        result = list(stocks.find(query))
+        df = pd.DataFrame(result)
+        df_copy = deepcopy(df)
+        df_small = df_copy[[node_1, node_2]]
+        df_small.dropna(inplace=True)
+        pca = PCA(n_components=2)
+        X_pca = pca.fit_transform(df_small)
+        df_pca = pd.DataFrame(X_pca, columns=['PCA_Component_1', 'PCA_Component_2'])
+
+        coefficient = compute_coefficient(df, indicator, node_1, node_2)
+        print("coefficient:", coefficient)
+
+        nodes = app.config["nodes"]
+        edges = app.config["edges"]
+        G = app.config["NETWORK_GRAPH"]
+
+        num_nodes = G.number_of_nodes()
+        num_edges = G.number_of_edges()
+        print("Original Node List:", nodes)
+        print("Original Edge List:", edges)
+        print("original number of nodes: ", num_nodes)
+        print("original number of edges: ", num_edges)
+
+        G.add_node('new_node')
+        node1_pos = next(({"x": v["x"], "y": v["y"]} for k, v in nodes.items() if v["name"] == node_1), None)
+        node2_pos = next(({"x": v["x"], "y": v["y"]} for k, v in nodes.items() if v["name"] == node_2), None)
+
+        if node1_pos is not None and node2_pos is not None:
+            middle_pos = calculate_middle_point([node1_pos["x"], node1_pos["y"]], [node2_pos["x"], node2_pos["y"]])
+            all_positions = [[v["x"], v["y"]] for v in nodes.values()]
+            adjusted_middle_pos = adjust_position(middle_pos, all_positions)
+            new_node_name = "new_node"
+            new_node_key = f"node{num_nodes + 1}"
+            nodes[new_node_key] = {"name": new_node_name, "x": adjusted_middle_pos[0], "y": adjusted_middle_pos[1]}
+            edges[f"node{num_edges + 1}"] = {"source": indicator, "target": node_1, "width": coefficient[0]}
+            edges[f"node{num_edges + 2}"] = {"source": indicator, "target": node_2, "width": coefficient[1]}
+            edges[f"node{num_edges + 3}"] = {"source": indicator, "target": new_node_name, "width": coefficient[2]}
+            print("The new node：", nodes[new_node_key])
+            print(f"Edge 1: {edges[f'node{num_edges + 1}']}\n"
+                  f"Edge 2: {edges[f'node{num_edges + 2}']}\n"
+                  f"Edge 3: {edges[f'node{num_edges + 3}']}")
+
+        else:
+            print("'node_1' or 'node2' are not found")
+
+        print("New Node List:", nodes)
+        print("New Edge List:", edges)
 
         return jsonify({
             "nodes": nodes,
@@ -224,3 +317,4 @@ api.add_resource(StocksPrice, '/companies')
 api.add_resource(StocksAttributes, '/histogram')
 api.add_resource(StocksCoefficient, '/barchart')
 api.add_resource(NetworkLayout, '/networkGraph/layout')
+api.add_resource(NetworkAddNode, '/networkGraph/newNode')
