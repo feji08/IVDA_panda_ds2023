@@ -51,10 +51,7 @@ class TestYourApp(unittest.TestCase):
                     "range": [0, 1]
                 }
             },
-            "nodes": {
-                "Node1": "returnOnAssets",
-                "Node2": "grossProfitMargin"
-            },
+            "nodes":  ["returnOnAssets", "grossProfitMargin"],
             "indicator": "price",
             "algorithm": "PCA"
         })

@@ -96,7 +96,7 @@ def compute_coefficient(df, indicator, node_1, node_2):
     # 2. Dimension reduction
     # Perform PCA with two components
     pca = PCA(n_components=2)
-    X_pca = pca.fit_transform(X_scaled)
+    X_pca = pca.fit_transform(df_scaled[[node_1, node_2]])
     # Create a DataFrame with the new dimensions
     df_pca = pd.DataFrame(X_pca, columns=['PCA_Component_1', 'PCA_Component_2'])
     # 3. Correlation compute ? which methods to choose
@@ -140,8 +140,8 @@ class StocksCoefficient(Resource):
 
         # 提取出算法和node，然后返回值
         # 获取 "Node1" 和 "Node2" 键对应的值
-        node_1 = json_data.get("nodes", {}).get("Node1")
-        node_2 = json_data.get("nodes", {}).get("Node2")
+        node_1 = json_data.get("nodes", [])[0]
+        node_2 = json_data.get("nodes", [])[1]
         indicator = json_data.get("indicator")
         algorithm = json_data.get("algorithm")
 
