@@ -262,13 +262,6 @@ class NetworkAddNode(Resource):
         query = {"$and": [date_query] + attribute_queries}
         result = list(stocks.find(query))
         df = pd.DataFrame(result)
-        df_copy = deepcopy(df)
-        df_small = df_copy[[node_1, node_2]]
-        df_small.dropna(inplace=True)
-        pca = PCA(n_components=2)
-        X_pca = pca.fit_transform(df_small)
-        df_pca = pd.DataFrame(X_pca, columns=['PCA_Component_1', 'PCA_Component_2'])
-
         coefficient = compute_coefficient(df, indicator, node_1, node_2)
         print("coefficient:", coefficient)
 
