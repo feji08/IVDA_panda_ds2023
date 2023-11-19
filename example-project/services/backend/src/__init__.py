@@ -153,6 +153,8 @@ class StocksCoefficient(Resource):
             "values": [coefficient[0], coefficient[1], coefficient[2], coefficient_all[2]]
         }
 
+        return jsonify({"coefficients": coefficients})
+
 class NetworkLayout(Resource):
     def get(self):
         json_data = request.get_json()
