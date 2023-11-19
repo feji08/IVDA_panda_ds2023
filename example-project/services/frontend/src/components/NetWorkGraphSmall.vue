@@ -1,6 +1,7 @@
 <template>
   <div class="graph-container" ref="container">
-    <NetWorkGraph :overview=true :scaleRatio=0.4 :rectangle=rectangle />
+    <NetWorkGraph :overview=true :scaleRatio=0.5 :rectangle=rectangle
+    @update-viewBox="handleUpdateViewBox" />
     <div
         class="draggable-rectangle"
         @mousedown="startDragging"
@@ -72,6 +73,9 @@ export default {
     stopDragging() {
       this.isDragging = false;
     },
+    handleUpdateViewBox(newViewBox){
+      this.$emit('updateViewBox', newViewBox);
+    }
   },
 };
 </script>

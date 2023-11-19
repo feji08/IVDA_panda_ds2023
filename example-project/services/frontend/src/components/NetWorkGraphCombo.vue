@@ -4,9 +4,9 @@
       <h3>Related view of attributes</h3>
     </v-row>
     <div class="network-graph-container">
-      <NetWorkGraph :overview=false :scaleRatio=1 />
+      <NetWorkGraph :overview=false :scaleRatio=1 :viewBox="detailViewBox"/>
       <div class="network-graph-small">
-        <NetWorkGraphSmall/>
+        <NetWorkGraphSmall @updateViewBox="handleUpdateViewBox"/>
       </div>
     </div>
   </div>
@@ -18,6 +18,17 @@ import NetWorkGraphSmall from "./NetWorkGraphSmall";
 
 export default {
   components: {NetWorkGraph, NetWorkGraphSmall},
+  data() {
+    return {
+      detailViewBox: null,
+    };
+  },
+  methods:{
+    handleUpdateViewBox(newViewBox){
+      console.log('NetWorkGraph received newViewBox: ', newViewBox);
+      this.detailViewBox=newViewBox;
+    }
+  },
 }
 </script>
 
