@@ -87,7 +87,7 @@ const updateViewBox = computed(() => {
     return {left:lt_svg.x,
       right:rb_svg.x,
       top:lt_svg.y,
-      bottom:lt_svg.y}
+      bottom:rb_svg.y}
   }
   return null;
 });
@@ -103,7 +103,16 @@ watch(updateViewBox, (newVal) => {
 });
 
 watch(() => props.viewBox, (newVal) => {
-  graph.value?.setViewBox(newVal)
+  const bufferPercentage =0.15;
+  const bufferX = (newVal.right - newVal.left) * bufferPercentage;
+  const bufferY = (newVal.bottom - newVal.top) * bufferPercentage;
+  const bufferedViewBox = {
+    left: newVal.left - bufferX,
+    right: newVal.right + bufferX,
+    top: newVal.top - bufferY,
+    bottom: newVal.bottom + bufferY
+  };
+  graph.value?.setViewBox(bufferedViewBox)
 });
 
 </script>
