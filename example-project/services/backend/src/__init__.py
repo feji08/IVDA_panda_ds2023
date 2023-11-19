@@ -7,6 +7,9 @@ from flask_pymongo import PyMongo
 from pymongo.collection import Collection
 from flask import request
 import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 from statsmodels.tsa.ar_model import AutoReg
 
 # Configure Flask & Flask-PyMongo:
@@ -57,7 +60,7 @@ class StocksAttributes(Resource):
 
         # 通过日期和属性条件进行查询
         query = {"$and": [date_query] + attribute_queries}
-        print(query)
+
         # 执行查询并指定返回的字段
         result = list(stocks.find(query))  # 执行查询并指定返回的字段
 
@@ -73,52 +76,85 @@ class StocksAttributes(Resource):
         })  # 返回满足条件的三个 attributes 的值，分别作为三个列表组成的 JSON 响应
 
 
+def compute_coefficient(df, indicator, node_1, node_2):
+    # dimension reduction
+    # PCA for display, indicator ~ node_1, node_2
+    df_display = df[[indicator, node_1, node_2]].copy()
+    # handling missing value(ignore on purpose) ~ get all rows without NAN
+    print(
+        "The dataset before dropping the rows contains {} data records and {} features.".format(df_display.shape[0],
+                                                                                                df_display.shape[
+                                                                                                    1]))
+    df_display.dropna(inplace=True)
+    print("The dataset now contains {} data records and {} features.".format(df_display.shape[0],
+                                                                             df_display.shape[1]))
+    # 1. Standardization
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(df_display)
+    # Convert the standardized data back to a DataFrame
+    df_scaled = pd.DataFrame(X_scaled, columns=df_display.columns)
+    # 2. Dimension reduction
+    # Perform PCA with two components
+    pca = PCA(n_components=2)
+    X_pca = pca.fit_transform(X_scaled)
+    # Create a DataFrame with the new dimensions
+    df_pca = pd.DataFrame(X_pca, columns=['PCA_Component_1', 'PCA_Component_2'])
+    # 3. Correlation compute ? which methods to choose
+    # Calculate correlation coefficients
+    corr_1_2 = df_scaled[indicator].corr(df_scaled[node_1])
+    corr_1_3 = df_scaled[indicator].corr(df_scaled[node_2])
+    # Calculate correlation between the first dimension and the new dimension
+    corr_1_pca = df_scaled[indicator].corr(df_pca['PCA_Component_1'])
+    # Correlation values
+    correlations = [corr_1_2, corr_1_3, corr_1_pca]
+
+    return correlations
+
+
+class StocksCoefficient(Resource):
+    def get(self):
+        json_data = request.get_json()  # 获取前端传入的 JSON 数据
+        time_conditions = json_data.get("time", [])  # 获取时间条件
+        attribute_conditions = json_data.get("attributes", {})  # 获取属性条件
+
+        # 将字符串转换为日期类型
+        date_objects = [datetime.strptime(date_str, "%Y-%m") for date_str in time_conditions]
+
+        # 构建日期查询条件
+        date_query = {"date": {"$gte": date_objects[0], "$lte": date_objects[1]}}
+
+        attribute_queries = []
+        attribute_name = []
+        # 根据前端传入的属性条件构建查询条件
+        for attr, details in attribute_conditions.items():
+            if "name" in details and "range" in details:
+                query = {details["name"]: {"$gte": details["range"][0], "$lte": details["range"][1]}}
+                attribute_queries.append(query)
+                attribute_name.append(details["name"])
+
+        # 通过日期和属性条件进行查询
+        query = {"$and": [date_query] + attribute_queries}
+        # 执行查询并指定返回的字段
+        result = list(stocks.find(query))  # 执行查询并指定返回的字段
+        df = pd.DataFrame(result)
+
+        # 提取出算法和node，然后返回值
+        # 获取 "Node1" 和 "Node2" 键对应的值
+        node_1 = json_data.get("nodes", {}).get("Node1")
+        node_2 = json_data.get("nodes", {}).get("Node2")
+        indicator = json_data.get("indicator")
+        algorithm = json_data.get("algorithm")
+
+        coefficient = compute_coefficient(df, indicator, node_1, node_2)
+        coefficient_all = compute_coefficient(pd.DataFrame(list(stocks.find())), indicator, node_1, node_2)
+
+        coefficients = {
+            "values": [coefficient[0], coefficient[1], coefficient[2], coefficient_all[2]]
+        }
+
+        return jsonify({"coefficients": coefficients})
+
+
 api.add_resource(StocksPrice, '/companies')
 api.add_resource(StocksAttributes, '/histogram')
-
-# class CompaniesList(Resource):
-#     def get(self, args=None):
-#         # retrieve the arguments and convert to a dict
-#         args = request.args.to_dict()
-#         print(args)
-#         # If the user specified category is "All" we retrieve all companies
-#         if args['category'] == 'All':
-#             cursor = companies.find()
-#         # In any other case, we only return the companies where the category applies
-#         else:
-#             cursor = companies.find(args)
-#         # we return all companies as json
-#         return [Company(**doc).to_json() for doc in cursor]
-#
-#
-# class Companies(Resource):
-#     def get(self, id):
-#         # search for the company by ID
-#         cursor = companies.find_one_or_404({"id": id})
-#         company = Company(**cursor)
-#         # retrieve args
-#         args = request.args.to_dict()
-#         # retrieve the profit
-#         profit = company.profit
-#         # add to df
-#         profit_df = pd.DataFrame(profit).iloc[::-1]
-#         if args['algorithm'] == 'random':
-#             # retrieve the profit value from 2021
-#             prediction_value = int(profit_df["value"].iloc[-1])
-#             # add the value to profit list at position 0
-#             company.profit.insert(0, {'year': 2022, 'value': prediction_value})
-#         elif args['algorithm'] == 'regression':
-#             # create model
-#             model_ag = AutoReg(endog=profit_df['value'], lags=1, trend='c', seasonal=False, exog=None, hold_back=None,
-#                                period=None, missing='none')
-#             # train the model
-#             fit_ag = model_ag.fit()
-#             # predict for 2022 based on the profit data
-#             prediction_value = fit_ag.predict(start=len(profit_df), end=len(profit_df), dynamic=False).values[0]
-#             # add the value to profit list at position 0
-#             company.profit.insert(0, {'year': 2022, 'value': prediction_value})
-#         return company.to_json()
-#
-#
-# api.add_resource(CompaniesList, '/companies')
-# api.add_resource(Companies, '/companies/<int:id>')
+api.add_resource(StocksCoefficient, '/barchart')

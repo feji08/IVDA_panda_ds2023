@@ -12,15 +12,15 @@ class TestYourApp(unittest.TestCase):
         response = self.app.get('/histogram', json={
             "time": ["2010-01", "2022-10"],
             "attributes": {
-                "price": {
+                "attribute1": {
                     "name": "price",
                     "range": [10, 20]
                 },
-                "roe": {
+                "attribute2": {
                     "name": "roe",
                     "range": [0, 1]
                 },
-                "roic": {
+                "attribute3": {
                     "name": "roic",
                     "range": [0, 1]
                 }
@@ -32,6 +32,38 @@ class TestYourApp(unittest.TestCase):
 
         # 检查其他预期结果
         print(len(response.get_json()['price']))
+
+    def test_bar_chart(self):
+        # 模拟发送 Get 请求
+        response = self.app.get('/barchart', json={
+            "time": ["2010-01", "2022-10"],
+            "attributes": {
+                "attribute1": {
+                    "name": "price",
+                    "range": [10, 20]
+                },
+                "attribute2": {
+                    "name": "roe",
+                    "range": [0, 1]
+                },
+                "attribute3": {
+                    "name": "roic",
+                    "range": [0, 1]
+                }
+            },
+            "nodes": {
+                "Node1": "returnOnAssets",
+                "Node2": "grossProfitMargin"
+            },
+            "indicator": "price",
+            "algorithm": "PCA"
+        })
+
+        # 检查响应状态码
+        self.assertEqual(response.status_code, 200)  # 例如，检查响应状态码是否为 200
+
+        # 检查其他预期结果
+        print(response.get_json())
 
 
 if __name__ == '__main__':
