@@ -158,10 +158,10 @@ class StocksCoefficient(Resource):
 
         return jsonify({"coefficients": coefficients})
 
-def distribute_points_on_circle(radius, num_points):
+def distribute_points_on_circle(radius, num_points, start_angle):
     points = []
     for i in range(num_points):
-        angle = 2 * math.pi * i / num_points
+        angle = 2 * math.pi * (i / num_points + start_angle)
         x = radius * math.cos(angle)
         y = radius * math.sin(angle)
         points.append((x, y))
@@ -214,8 +214,8 @@ class NetworkLayout(Resource):
                     G.add_edge(corr_matrix.columns[i], corr_matrix.columns[j], weight=corr_matrix.iloc[i, j])
 
         # attribute coordinates for each nodes
-        points_radius_0_4 = distribute_points_on_circle(0.4, 6)
-        points_radius_0_8 = distribute_points_on_circle(0.8, G.number_of_nodes()-6)
+        points_radius_0_4 = distribute_points_on_circle(0.4, 6, 0)
+        points_radius_0_8 = distribute_points_on_circle(0.8, G.number_of_nodes()-6, 1.0/24.0)
         all_points = points_radius_0_4 + points_radius_0_8
 
         nodes = {}
@@ -253,7 +253,7 @@ def adjust_position(pos, existing_positions, delta=0.1):
     return adjusted_pos
 
 class NetworkAddNode(Resource):
-    def get(self):
+    def post(self):
         global app
         json_data = request.get_json()
         time_conditions = json_data.get("time", [])
