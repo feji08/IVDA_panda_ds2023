@@ -1,10 +1,13 @@
 <template>
   <div class="graph-container" ref="container">
     <NetWorkGraph :dataConfigs="$props.dataConfigs"
-                  :overview=false :scaleRatio=1 :viewBox="$props.detailViewBox"/>
+                  :overview=false :scaleRatio=1 :viewBox="$props.detailViewBox"
+                  :selectable="selectable"
+                  @update-selection="handleUpdateSelection"/>
     <div class="buttons-container">
-      <button class="grouping-button" @click="startSelection">Start Selection</button>
-      <button class="confirming-button" @click="groupNodes">Group Nodes</button>
+      <div class="instruction" v-show="showInstruction">"SHIFT" to select two nodes</div>
+      <button class="grouping-button" @click="startSelection">SELECT</button>
+      <button class="confirming-button" @click="groupNodes">GROUP</button>
     </div>
   </div>
 </template>
@@ -16,19 +19,26 @@ export default {
   props: ["dataConfigs","detailViewBox"],
   data() {
     return {
-      selectedNodes: Array,
+      showInstruction: false,
+      selectable: false,
+      selectedNodes: {},
     };
   },
   methods: {
     startSelection() {
-      this.selectedNodes = [];
-      console.log("startSelection")
+      this.showInstruction = true;
+      this.selectable = true;
     },
     groupNodes() {
-      //
-      console.log("groupNodes")
-      // console.log(this.$props.detailViewBox)
+      this.showInstruction = false;
+      this.selectable = false;
+      if (this.selectedNodes.length===2){
+        this.$emit('updateSelection', this.selectedNodes);
+      }
     },
+    handleUpdateSelection(newSelection){
+      this.selectedNodes = newSelection;
+    }
   },
 };
 </script>
@@ -40,9 +50,30 @@ export default {
 
 .buttons-container {
   position: absolute;
-  bottom: 0;
-  left: 0;
+  bottom: 10px;
+  left: 10px;
   display: flex;
   gap: 10px;
 }
+
+.instruction {
+  font-size: 8px;
+  color: #333; /* Set text color */
+  position: absolute;
+  bottom: 25px; /* Adjust the top position to create space above buttons */
+  left: 0;
+}
+
+.grouping-button,
+.confirming-button {
+  font-size: 12px;
+  border: 1px solid rgba(134, 134, 246, 0.3);
+  padding: 2px 2px;
+}
+
+.grouping-button:hover,
+.confirming-button:hover {
+  background-color: rgba(134, 134, 246, 0.3);
+}
+
 </style>

@@ -12,12 +12,14 @@ import {onMounted, ref, reactive, defineProps, computed, watch, getCurrentInstan
 
 const graph = ref(null);
 const instance = getCurrentInstance();
+
 const nodes = ref({});
 const edges = ref({});
 const layouts = ref({});
 
 const props = defineProps({
   overview: Boolean,
+  selectable:Boolean,
   scaleRatio: Number,
   rectangle: Object,
   viewBox: Object,
@@ -28,11 +30,11 @@ const props = defineProps({
 
 const selectedNodes = ref([]);
 const configs = reactive(vNG.getFullConfigs())
-configs.node.selectable = 2;
+configs.node.selectable = false; //default
 
 const defaultNodeRadius = 3;
 configs.view.scalingObjects = true;
-configs.view.autoPanAndZoomOnLoad = "fit-content";
+configs.view.autoPanAndZoomOnLoad = props.overview? "fit-content":false;
 configs.view.fitContentMargin = 15;
 configs.node.draggable = false;
 configs.node.normal.radius = defaultNodeRadius * props.scaleRatio;
@@ -143,6 +145,10 @@ watch(() => props.viewBox, (newVal) => {
   graph.value?.setViewBox(bufferedViewBox)
 });
 
+watch(selectedNodes, (newVal) => {
+  instance.emit('update-selection', newVal);
+});
+
 watch(() => props.dataConfigs, (newVal) => {
   const postData = {
     "time": ["2010-01", "2022-10"],
@@ -166,6 +172,11 @@ watch(() => props.dataConfigs, (newVal) => {
   postData.Algorithm = newVal.algorithm;
   fetchData(postData);
 });
+
+watch(() => props.selectable, (newVal) =>{
+    configs.node.selectable = newVal? 2:false;
+  }
+)
 
 </script>
 

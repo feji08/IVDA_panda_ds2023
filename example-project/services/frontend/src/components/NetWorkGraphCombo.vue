@@ -4,7 +4,8 @@
       <h3>Related view of attributes</h3>
     </v-row>
     <div class="network-graph-container">
-      <NetWorkGraphDetail :dataConfigs="dataConfigs" :detailViewBox="detailViewBox"/>
+      <NetWorkGraphDetail :dataConfigs="dataConfigs" :detailViewBox="detailViewBox"
+                          @updateSelection="handleUpdateSelection"/>
       <div class="network-graph-small">
         <NetWorkGraphSmall :dataConfigs="dataConfigs"
                            @updateViewBox="handleUpdateViewBox"/>
@@ -35,6 +36,10 @@ export default {
     handleUpdateViewBox(newViewBox){
       // console.log('NetWorkGraph received newViewBox: ', newViewBox);
       this.detailViewBox=newViewBox;
+    },
+    handleUpdateSelection(selection){
+      //After grouping this can be handled
+      console.log(selection)
     },
     updateDataConfigs() {
       // props -> dataConfigs

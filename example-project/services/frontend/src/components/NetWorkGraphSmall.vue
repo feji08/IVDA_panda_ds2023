@@ -2,7 +2,7 @@
   <div class="graph-container" ref="container">
     <NetWorkGraph :dataConfigs="this.$props.dataConfigs"
                   :overview=true :scaleRatio=0.5 :rectangle=rectangle
-    @update-viewBox="handleUpdateViewBox" />
+                  @update-viewBox="handleUpdateViewBox" />
     <div
         class="draggable-rectangle"
         @mousedown="startDragging"
