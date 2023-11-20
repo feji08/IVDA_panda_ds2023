@@ -11,11 +11,17 @@
           <v-row>
             <v-col cols="12" sm="12">
               <v-range-slider
-                  v-model="selectedRange"
-                  min="2021"
-                  max="2023"
-                  thumb-label
-              ></v-range-slider>
+                  v-model="selectedTimeRange"
+                  :min="new Date('2010-01').getTime()"
+                  :max="new Date('2022-12').getTime()"
+                  :step="30 * 24 * 60 * 60 * 1000"
+                  thumb-label="always"
+                  class="my-custom-thumb-label"
+              >
+                <template v-slot:thumb-label="{ modelValue }">
+                  {{ formatTimestamp(modelValue) }}
+                </template>
+              </v-range-slider>
             </v-col>
           </v-row>
           <v-row>
@@ -57,7 +63,14 @@
           <NetWorkGraphCombo/>
         </v-col>
         <v-col cols="12" md="4">
-          <RightBar/>
+          <!--  传递的数据！！！ -->
+          <RightBar :key="RightBarId"
+                    :selectedIndicator="indicators.selectedValue"
+                    :selectedAlgorithm="algorithms.selectedValue"
+                    :formattedTimeRange="formattedTimeRange"
+                    @changeCurrentlySelectedIndicator="changeCurrentlyIndicator"
+                    @changeCurrentlySelectedAlgorithm="changeCurrentlyAlgorithm"
+          />
         </v-col>
       </v-row>
     </v-container>
@@ -69,10 +82,10 @@ import RightBar from './RightBar';
 export default {
   components: {NetWorkGraphCombo, RightBar},
   data: () => ({
-    selectedRange: [2021, 2023],
+    selectedTimeRange: [new Date('2010-01').getTime(), new Date('2022-12').getTime()],
     indicators: {
-      names: ['Attribute A', 'Attribute B', 'Attribute C', 'Attribute D'],
-      selectedValue: 'Attribute A',
+      names: ['revenue', 'netIncome', 'eps', 'grossProfit'],
+      selectedValue: 'revenue',
     },
     algorithms: {
       names: ['PCA', 'K-Means'],
@@ -85,178 +98,19 @@ export default {
       },
     },
   }),
+  methods: {
+    formatTimestamp(timestamp) {
+      const date = new Date(timestamp);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      return `${year}-${month}`;
+    },
+  },
+  computed: {
+    formattedTimeRange() {
+      // 格式化日期范围为 "YYYY-MM" 形式
+      return this.selectedTimeRange.map((timestamp) => this.formatTimestamp(timestamp));
+    },
+  },
 }
 </script>
-
-
-
-
-
-
-
-<!--<template>-->
-<!--  <div>-->
-<!--    <v-container fluid>-->
-<!--      <v-row>-->
-<!--        <v-col cols="12" md="3" class="sideBar">-->
-<!--          <v-row>-->
-<!--            <v-col cols="12" sm="12">-->
-<!--              <div class="control-panel-font">Swipe to select time period</div>-->
-<!--            </v-col>-->
-<!--          </v-row>-->
-<!--          <v-row>-->
-<!--            <v-col cols="12" sm="12">-->
-<!--              <v-select-->
-<!--                  :items="categories.values"-->
-<!--                  label="Select a category"-->
-<!--                  dense-->
-<!--                  v-model="categories.selectedValue"-->
-<!--                  @change="changeCategory"-->
-<!--              ></v-select>-->
-<!--            </v-col>-->
-<!--          </v-row>-->
-<!--          <v-row>-->
-<!--            <v-col cols="12" sm="12">-->
-<!--              <div class="control-panel-font">Profit View of Company</div>-->
-<!--            </v-col>-->
-<!--          </v-row>-->
-<!--          <v-row>-->
-<!--            <v-col cols="12" sm="12">-->
-<!--              <v-select-->
-<!--                  :items="companies.names"-->
-<!--                  label="Select a company"-->
-<!--                  dense-->
-<!--                  v-model="companies.selectedValue"-->
-<!--                  item-text="names"-->
-<!--                  @change="changeCompany"-->
-<!--              ></v-select>-->
-<!--            </v-col>-->
-<!--          </v-row>-->
-<!--          <v-row>-->
-<!--            <v-col cols="12" sm="12">-->
-<!--              <v-select-->
-<!--                  :items="algorithm.values"-->
-<!--                  label="Select an algorithm for prediction"-->
-<!--                  dense-->
-<!--                  v-model="algorithm.selectedValue"-->
-<!--                  @change="changeAlgorithm"-->
-<!--              ></v-select>-->
-<!--            </v-col>-->
-<!--          </v-row>-->
-<!--        </v-col>-->
-<!--        <v-col cols="12" md="5">-->
-<!--          <NetWorkGraph />-->
-<!--        </v-col>-->
-<!--        <v-col cols="12" md="4">-->
-<!--          <RightBar />-->
-<!--        </v-col>-->
-
-
-<!--        <v-col cols="12" md="3">-->
-<!--          <ScatterPlot :key="scatterPlotId"-->
-<!--                       :selectedCategory="categories.selectedValue"-->
-<!--                       @changeCurrentlySelectedCompany="changeCurrentlySelectedCompany"-->
-<!--          />-->
-<!--        </v-col>-->
-<!--        <v-col cols="12" md="3">-->
-<!--          <LinePlot :key="linePlotId"-->
-<!--                    :selectedCompanyId="companies.companyNameToId[companies.selectedValue]"-->
-<!--                    :selectedCompanyName="companies.selectedValue"-->
-<!--                    :selectedAlgorithm="algorithm.selectedValue"-->
-<!--          />-->
-<!--        </v-col>-->
-<!--        <v-col cols="12" md="3">-->
-<!--          <BarChart :key="BarChartId"-->
-<!--                    :selectedCompanyId="companies.companyNameToId[companies.selectedValue]"-->
-<!--                    :selectedCompanyName="companies.selectedValue"-->
-<!--          />-->
-<!--        </v-col>-->
-<!--      </v-row>-->
-<!--    </v-container>-->
-<!--  </div>-->
-<!--</template>-->
-
-<!--<script>-->
-<!--import ScatterPlot from './ScatterPlot';-->
-<!--import LinePlot from './LinePlot';-->
-<!--import BarChart from './BarChart.vue';-->
-<!--import NetWorkGraph from "./NetWorkGraph.vue";-->
-<!--export default {-->
-<!--  components: {NetWorkGraph, ScatterPlot, LinePlot, BarChart},-->
-<!--  data: () => ({-->
-<!--    scatterPlotId: 0,-->
-<!--    linePlotId: 0,-->
-<!--    BarChartId: 0,-->
-<!--    categories: {-->
-<!--      values: ['All', 'tech', 'health', 'bank'],-->
-<!--      selectedValue: 'All'-->
-<!--    },-->
-<!--    companies: {-->
-<!--      values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],-->
-<!--      selectedValue: 'alphabet',-->
-<!--      names:[],-->
-<!--      companyNameToId: []-->
-<!--    },-->
-<!--    algorithm: {-->
-<!--      values: ['none', 'random', 'regression'],-->
-<!--      selectedValue: 'none'-->
-<!--    }-->
-<!--  }),-->
-<!--    mounted() {-->
-<!--      this.fetchData()-->
-<!--    },-->
-<!--  methods: {-->
-<!--     async fetchData() {-->
-<!--      // req URL to retrieve companies from backend-->
-<!--       var reqUrl = 'http://127.0.0.1:5000/companies?category=All'-->
-<!--        console.log('ReqURL ' + reqUrl)-->
-<!--        // await response and data-->
-<!--        const response = await fetch(reqUrl)-->
-<!--        const responseData = await response.json();-->
-<!--        const companyNameToId = {};-->
-
-<!--        // get company data-->
-<!--        responseData.forEach((company) => {-->
-<!--          this.companies.names.push(company.name)-->
-<!--          companyNameToId[company.name] = company.id-->
-<!--          this.companies.companyNameToId = companyNameToId-->
-<!--       })-->
-<!--     },-->
-<!--    getCompanyName(value) {-->
-<!--      return this.companies.companyIdToName[value];-->
-<!--    },-->
-<!--    changeCurrentlySelectedCompany(companyName) {-->
-<!--      this.companies.selectedValue = companyName-->
-<!--      this.changeCompany()-->
-<!--    },-->
-<!--    changeCategory() {-->
-<!--      this.scatterPlotId += 1-->
-<!--    },-->
-<!--    changeCompany() {-->
-<!--      this.linePlotId += 1-->
-<!--    },-->
-<!--    changeAlgorithm() {-->
-<!--      this.linePlotId += 1-->
-<!--    }-->
-<!--  }-->
-<!--  }-->
-<!--</script>-->
-
-<!--<style scoped>-->
-<!--.control-panel-font {-->
-<!--  font-family: "Open Sans", verdana, arial, sans-serif;-->
-<!--  align-items: center;-->
-<!--  font-size: 19px;-->
-<!--  border-bottom: 1px solid rgba(0, 0, 0, 0.1);-->
-<!--  display: flex;-->
-<!--  font-weight: 800;-->
-<!--  height: 40px;-->
-<!--}-->
-<!--.sideBar {-->
-<!--  border-right: 2px solid rgba(0, 0, 0, 0.1);-->
-<!--  background: #edeafc;-->
-<!--  padding-left: 17px;-->
-<!--  height: calc(100vh - 50px);-->
-<!--}-->
-<!--</style>-->
-
