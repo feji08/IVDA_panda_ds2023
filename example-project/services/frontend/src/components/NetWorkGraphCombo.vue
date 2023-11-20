@@ -18,6 +18,7 @@ import NetWorkGraphSmall from "./NetWorkGraphSmall";
 
 export default {
   components: {NetWorkGraph, NetWorkGraphSmall},
+  props: ["selectedIndicator","selectedAlgorithm","formattedTimeRange"],
   data() {
     return {
       detailViewBox: null,
@@ -25,7 +26,7 @@ export default {
   },
   methods:{
     handleUpdateViewBox(newViewBox){
-      console.log('NetWorkGraph received newViewBox: ', newViewBox);
+      // console.log('NetWorkGraph received newViewBox: ', newViewBox);
       this.detailViewBox=newViewBox;
     }
   },

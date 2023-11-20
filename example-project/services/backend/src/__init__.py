@@ -168,7 +168,7 @@ def distribute_points_on_circle(radius, num_points):
     return points
 
 class NetworkLayout(Resource):
-    def get(self):
+    def post(self):
         global app
         json_data = request.get_json()
         time_conditions = json_data.get("time", [])

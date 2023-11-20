@@ -60,7 +60,9 @@
           </v-row>
         </v-col>
         <v-col cols="12" md="5">
-          <NetWorkGraphCombo/>
+          <NetWorkGraphCombo :selectedIndicator="indicators.selectedValue"
+                             :selectedAlgorithm="algorithms.selectedValue"
+                             :formattedTimeRange="formattedTimeRange"/>
         </v-col>
         <v-col cols="12" md="4">
           <!--  传递的数据！！！ -->
