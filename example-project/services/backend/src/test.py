@@ -125,8 +125,8 @@ class TestYourApp(unittest.TestCase):
                     "range": [0, 1]
                 }
             },
-            "nodes": ["netIncome", "revenue"],
-            "indicator": "price",
+            "nodes": ["netIncome", "assetTurnover"],
+            "indicator": "revenue",
             "algorithm": "PCA"
         })
 

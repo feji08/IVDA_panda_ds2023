@@ -214,6 +214,9 @@ class NetworkLayout(Resource):
         edges= {}
         for i, edge in enumerate(G.edges(data=True), 1):
             edges[f"edge{i}"] = {"source": edge[0], "target": edge[1], "width": edge[2]['weight']}
+            source_key = [key for key, value in nodes.items() if value["name"] == edge[0]][0]
+            target_key = [key for key, value in nodes.items() if value["name"] == edge[1]][0]
+            edges[f"edge{i}"] = {"source": source_key, "target": target_key, "width": edge[2]['weight']}
 
         app.config["nodes"] = deepcopy(nodes)
         app.config["edges"] = deepcopy(edges)
@@ -284,17 +287,19 @@ class NetworkAddNode(Resource):
             middle_pos = calculate_middle_point([node1_pos["x"], node1_pos["y"]], [node2_pos["x"], node2_pos["y"]])
             all_positions = [[v["x"], v["y"]] for v in nodes.values()]
             adjusted_middle_pos = adjust_position(middle_pos, all_positions)
-            new_node_name = "new_node"
+            new_node_name = "new_pca_node"
             new_node_key = f"node{num_nodes + 1}"
             nodes[new_node_key] = {"name": new_node_name, "x": adjusted_middle_pos[0], "y": adjusted_middle_pos[1]}
-            edges[f"node{num_edges + 1}"] = {"source": indicator, "target": node_1, "width": coefficient[0]}
-            edges[f"node{num_edges + 2}"] = {"source": indicator, "target": node_2, "width": coefficient[1]}
-            edges[f"node{num_edges + 3}"] = {"source": indicator, "target": new_node_name, "width": coefficient[2]}
+            node_1_key = [key for key, value in nodes.items() if value["name"] == node_1][0]
+            node_2_key = [key for key, value in nodes.items() if value["name"] == node_2][0]
+            indicator_key = [key for key, value in nodes.items() if value["name"] == indicator][0]
+            edges[f"edge{num_edges + 1}"] = {"source": indicator_key, "target": node_1_key, "width": coefficient[0]}
+            edges[f"edge{num_edges + 2}"] = {"source": indicator_key, "target": node_2_key, "width": coefficient[1]}
+            edges[f"edge{num_edges + 3}"] = {"source": indicator_key, "target": new_node_key, "width": coefficient[2]}
             print("The new node：", nodes[new_node_key])
-            print(f"Edge 1: {edges[f'node{num_edges + 1}']}\n"
-                  f"Edge 2: {edges[f'node{num_edges + 2}']}\n"
-                  f"Edge 3: {edges[f'node{num_edges + 3}']}")
-
+            print(f"Edge 1: {edges[f'edge{num_edges + 1}']}\n"
+                  f"Edge 2: {edges[f'edge{num_edges + 2}']}\n"
+                  f"Edge 3: {edges[f'edge{num_edges + 3}']}")
         else:
             print("'node_1' or 'node2' are not found")
 
