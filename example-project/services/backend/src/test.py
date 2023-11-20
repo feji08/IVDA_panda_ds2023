@@ -64,7 +64,7 @@ class TestYourApp(unittest.TestCase):
 
     def test_Network_Layout(self):
         # 模拟发送 Get 请求
-        response = self.app.get('/networkGraph/layout', json={
+        response = self.app.post('/networkGraph/layout', json={
             "time": ["2010-01", "2022-10"],
             "attributes": {
                 "attribute1": {
@@ -91,7 +91,7 @@ class TestYourApp(unittest.TestCase):
 
     def test_Network_Add_Node(self):
         # only after calling the NetworkLayout API, will app.config["xxx"] in NetworkAddNode API be successfully set.
-        self.app.get('/networkGraph/layout', json={
+        self.app.post('/networkGraph/layout', json={
             "time": ["2010-01", "2022-10"],
             "attributes": {
                 "attribute1": {
@@ -109,7 +109,7 @@ class TestYourApp(unittest.TestCase):
             }
         })
 
-        response = self.app.get('/networkGraph/newNode', json={
+        response = self.app.post('/networkGraph/newNode', json={
             "time": ["2010-01", "2022-10"],
             "attributes": {
                 "attribute1": {
