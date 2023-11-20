@@ -215,7 +215,7 @@ class NetworkLayout(Resource):
 
         # attribute coordinates for each nodes
         points_radius_0_4 = distribute_points_on_circle(0.4, 6)
-        points_radius_0_8 = distribute_points_on_circle(0.8, 12)
+        points_radius_0_8 = distribute_points_on_circle(0.8, G.number_of_nodes()-6)
         all_points = points_radius_0_4 + points_radius_0_8
 
         nodes = {}
