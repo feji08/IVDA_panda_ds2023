@@ -4,30 +4,45 @@
       <h3>Related view of attributes</h3>
     </v-row>
     <div class="network-graph-container">
-      <NetWorkGraph :overview=false :scaleRatio=1 :viewBox="detailViewBox"/>
+      <NetWorkGraphDetail :dataConfigs="dataConfigs" :detailViewBox="detailViewBox"/>
       <div class="network-graph-small">
-        <NetWorkGraphSmall @updateViewBox="handleUpdateViewBox"/>
+        <NetWorkGraphSmall :dataConfigs="dataConfigs"
+                           @updateViewBox="handleUpdateViewBox"/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import NetWorkGraph from './NetWorkGraph';
+import NetWorkGraphDetail from './NetworkGraphDetail';
 import NetWorkGraphSmall from "./NetWorkGraphSmall";
 
 export default {
-  components: {NetWorkGraph, NetWorkGraphSmall},
+  components: {NetWorkGraphDetail, NetWorkGraphSmall},
   props: ["selectedIndicator","selectedAlgorithm","formattedTimeRange"],
   data() {
     return {
       detailViewBox: null,
+      dataConfigs: Object,
     };
+  },
+  watch: {
+    selectedIndicator: "updateDataConfigs",
+    selectedAlgorithm: "updateDataConfigs",
+    formattedTimeRange: "updateDataConfigs",
   },
   methods:{
     handleUpdateViewBox(newViewBox){
       // console.log('NetWorkGraph received newViewBox: ', newViewBox);
       this.detailViewBox=newViewBox;
+    },
+    updateDataConfigs() {
+      // props -> dataConfigs
+      this.dataConfigs = {
+        "indicator": this.selectedIndicator,
+        "algorithm": this.selectedAlgorithm,
+        "time": this.formattedTimeRange,
+      };
     }
   },
 }

@@ -1,6 +1,7 @@
 <template>
   <div class="graph-container" ref="container">
-    <NetWorkGraph :overview=true :scaleRatio=0.5 :rectangle=rectangle
+    <NetWorkGraph :dataConfigs="this.$props.dataConfigs"
+                  :overview=true :scaleRatio=0.5 :rectangle=rectangle
     @update-viewBox="handleUpdateViewBox" />
     <div
         class="draggable-rectangle"
@@ -21,6 +22,7 @@
 import NetWorkGraph from './NetWorkGraph';
 export default {
   components: {NetWorkGraph},
+  props: ["dataConfigs"],
   data() {
     return {
       rectanglePosition: { left: 20, top: 20 },
@@ -31,11 +33,15 @@ export default {
       startY: 0,
       ContainerWidth: 0,
       ContainerHeight: 0,
-      rectangle: {left:0,top:0,right:0,bottom:0}
+      rectangle: {left:0,top:0,right:0,bottom:0},
     };
   },
   mounted() {
     this.getContainerRect();
+    // change default focus
+    setTimeout(() => {
+      this.rectangle =  {left:20,top:20,right:80,bottom:60}
+    }, 1000);
   },
   methods: {
     getContainerRect(){

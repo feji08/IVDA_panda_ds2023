@@ -21,6 +21,7 @@ const props = defineProps({
   scaleRatio: Number,
   rectangle: Object,
   viewBox: Object,
+  dataConfigs: Object,
   //props for JSON
   //startTime,endTime,attribute1,attribute2,attribute3,indicator,PCA
 });
@@ -41,25 +42,8 @@ configs.edge.normal.dasharray = (edge) => edge.dasharray; // currently not worki
 configs.node.label.visible = !props.overview;
 configs.node.label.fontSize = 2;
 
-const fetchData = async () => {
+const fetchData = async (postData) => {
   try {
-    const postData = {
-      "time": ["2010-01", "2022-10"],
-      "attributes": {
-        "attribute1": {
-          "name": "price",
-          "range": [10, 20]
-        },
-        "attribute2": {
-          "name": "roe",
-          "range": [0, 1]
-        },
-        "attribute3": {
-          "name": "roic",
-          "range": [0, 1]
-        }
-      }
-    }
     // req URL to retrieve single company from backend
     var reqUrl = "http://127.0.0.1:5000/networkGraph/layout"
     console.log("ReqURL " + reqUrl)
@@ -75,8 +59,6 @@ const fetchData = async () => {
     // Make the POST request and wait for the response
     const response = await fetch(reqUrl, requestOptions);
     const responseData = await response.json();
-
-    console.log('Received Object:', responseData);
 
     nodes.value = {};
     edges.value = {};
@@ -94,14 +76,12 @@ const fetchData = async () => {
                           "color": responseData.edges[key].width>0 ? "green": "red"
                           }
     });
-    console.log(edges.value)
     //layouts
     const layout_nodes = {}
     Object.keys(responseData.nodes).forEach((key) => {
       layout_nodes[key] = {"x": responseData.nodes[key].x*40,"y": responseData.nodes[key].y*40}
     });
     layouts.value = {"nodes": layout_nodes}
-    console.log(layouts.value)
   } catch (error) {
     console.error('Error fetching data from the backend:', error);
   }
@@ -122,7 +102,25 @@ const updateViewBox = computed(() => {
 });
 
 onMounted(() => {
-  fetchData();
+  const postData = {
+    "time": ["2010-01", "2022-10"],
+    "attributes": {
+      "attribute1": {
+        "name": "price",
+        "range": [10, 20]
+      },
+      "attribute2": {
+        "name": "roe",
+        "range": [0, 1]
+      },
+      "attribute3": {
+        "name": "roic",
+        "range": [0, 1]
+      }
+    }
+  }
+  fetchData(postData);
+  // updateViewBox.value;// manually trigger update
 });
 
 watch(updateViewBox, (newVal) => {
@@ -141,7 +139,32 @@ watch(() => props.viewBox, (newVal) => {
     top: newVal.top - bufferY,
     bottom: newVal.bottom + bufferY
   };
+  console.log(bufferedViewBox)
   graph.value?.setViewBox(bufferedViewBox)
+});
+
+watch(() => props.dataConfigs, (newVal) => {
+  const postData = {
+    "time": ["2010-01", "2022-10"],
+    "attributes": {
+      "attribute1": {
+        "name": "price",
+        "range": [10, 20]
+      },
+      "attribute2": {
+        "name": "roe",
+        "range": [0, 1]
+      },
+      "attribute3": {
+        "name": "roic",
+        "range": [0, 1]
+      }
+    }
+  }
+  postData.time = newVal.time;
+  postData.indicator = newVal.indicator;
+  postData.Algorithm = newVal.algorithm;
+  fetchData(postData);
 });
 
 </script>
