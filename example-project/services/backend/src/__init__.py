@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_restx import Resource, Api
@@ -13,6 +12,7 @@ from sklearn.preprocessing import StandardScaler
 from statsmodels.tsa.ar_model import AutoReg
 import networkx as nx
 from copy import deepcopy
+import math
 
 # Configure Flask & Flask-PyMongo:
 app = Flask(__name__)
@@ -158,6 +158,15 @@ class StocksCoefficient(Resource):
 
         return jsonify({"coefficients": coefficients})
 
+def distribute_points_on_circle(radius, num_points):
+    points = []
+    for i in range(num_points):
+        angle = 2 * math.pi * i / num_points
+        x = radius * math.cos(angle)
+        y = radius * math.sin(angle)
+        points.append((x, y))
+    return points
+
 class NetworkLayout(Resource):
     def get(self):
         global app
@@ -205,15 +214,18 @@ class NetworkLayout(Resource):
                     G.add_edge(corr_matrix.columns[i], corr_matrix.columns[j], weight=corr_matrix.iloc[i, j])
 
         # attribute coordinates for each nodes
-        pos = nx.spring_layout(G)
+        points_radius_0_4 = distribute_points_on_circle(0.4, 6)
+        points_radius_0_8 = distribute_points_on_circle(0.8, 12)
+        all_points = points_radius_0_4 + points_radius_0_8
 
         nodes = {}
         for i, node in enumerate(G.nodes(), 1):
-            nodes[f"node{i}"] = {"name": node, "x": pos[node][0], "y": pos[node][1]}
+            point = all_points[i-1]
+            x,y = point
+            nodes[f"node{i}"] = {"name": node, "x": x, "y": y}
 
         edges= {}
         for i, edge in enumerate(G.edges(data=True), 1):
-            edges[f"edge{i}"] = {"source": edge[0], "target": edge[1], "width": edge[2]['weight']}
             source_key = [key for key, value in nodes.items() if value["name"] == edge[0]][0]
             target_key = [key for key, value in nodes.items() if value["name"] == edge[1]][0]
             edges[f"edge{i}"] = {"source": source_key, "target": target_key, "width": edge[2]['weight']}
@@ -233,7 +245,7 @@ class NetworkLayout(Resource):
 def calculate_middle_point(pos1, pos2):
     return [(pos1[0] + pos2[0]) / 2, (pos1[1] + pos2[1]) / 2]
 
-def adjust_position(pos, existing_positions, delta=0.03):
+def adjust_position(pos, existing_positions, delta=0.1):
     adjusted_pos = pos[:]
     while any(all(abs(adjusted_pos[i] - p[i]) < delta for i in range(2)) for p in existing_positions):
         adjusted_pos[0] += delta
