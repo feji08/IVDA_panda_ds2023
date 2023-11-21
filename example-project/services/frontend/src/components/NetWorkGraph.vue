@@ -19,7 +19,6 @@ const props = defineProps({
   scaleRatio: Number,
   rectangle: Object,
   viewBox: Object,
-  dataConfigs: Object,
   netWork:Object,
   nodes:JSON,
   edges: JSON,
