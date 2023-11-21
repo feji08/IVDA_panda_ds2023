@@ -1,6 +1,7 @@
 <template>
   <div class="graph-container" ref="container">
-    <NetWorkGraph :dataConfigs="this.$props.dataConfigs"
+    <NetWorkGraph :nodes="$props.nodes" :edges="$props.edges" :layouts="$props.layouts"
+                  :dataConfigs="this.$props.dataConfigs"
                   :overview=true :scaleRatio=0.5 :rectangle=rectangle
                   @update-viewBox="handleUpdateViewBox" />
     <div
@@ -21,8 +22,8 @@
 <script>
 import NetWorkGraph from './NetWorkGraph';
 export default {
-  components: {NetWorkGraph},
-  props: ["dataConfigs"],
+  components: { NetWorkGraph},
+  props: ["dataConfigs","nodes","edges","layouts"],
   data() {
     return {
       rectanglePosition: { left: 20, top: 20 },

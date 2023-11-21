@@ -1,6 +1,6 @@
 <template>
   <v-network-graph v-model:selected-nodes="selectedNodes"
-                   :nodes="nodes" :edges="edges" :layouts="layouts"
+                   :nodes="$props.nodes" :edges="$props.edges" :layouts="$props.layouts"
                    :configs="configs" ref="graph"/>
 </template>
 
@@ -13,10 +13,6 @@ import {onMounted, ref, reactive, defineProps, computed, watch, getCurrentInstan
 const graph = ref(null);
 const instance = getCurrentInstance();
 
-const nodes = ref({});
-const edges = ref({});
-const layouts = ref({});
-
 const props = defineProps({
   overview: Boolean,
   selectable:Boolean,
@@ -24,6 +20,10 @@ const props = defineProps({
   rectangle: Object,
   viewBox: Object,
   dataConfigs: Object,
+  netWork:Object,
+  nodes:JSON,
+  edges: JSON,
+  layouts: JSON,
   //props for JSON
   //startTime,endTime,attribute1,attribute2,attribute3,indicator,PCA
 });
@@ -44,51 +44,6 @@ configs.edge.normal.dasharray = (edge) => edge.dasharray; // currently not worki
 configs.node.label.visible = !props.overview;
 configs.node.label.fontSize = 2;
 
-const fetchData = async (postData) => {
-  try {
-    // req URL to retrieve single company from backend
-    var reqUrl = "http://127.0.0.1:5000/networkGraph/layout"
-    console.log("ReqURL " + reqUrl)
-
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json', // Specify the content type as JSON
-      },
-      body: JSON.stringify(postData), // Convert the postData object to a JSON string
-    };
-
-    // Make the POST request and wait for the response
-    const response = await fetch(reqUrl, requestOptions);
-    const responseData = await response.json();
-
-    nodes.value = {};
-    edges.value = {};
-    layouts.value = {};
-
-    //parse nodes
-    Object.keys(responseData.nodes).forEach((key) => {
-      nodes.value[key] = {"name": responseData.nodes[key].name}
-    });
-    //edges
-    Object.keys(responseData.edges).forEach((key) => {
-      edges.value[key] = {"source": responseData.edges[key].source,
-                          "target": responseData.edges[key].target,
-                          "width": responseData.edges[key].width,
-                          "color": responseData.edges[key].width>0 ? "green": "red"
-                          }
-    });
-    //layouts
-    const layout_nodes = {}
-    Object.keys(responseData.nodes).forEach((key) => {
-      layout_nodes[key] = {"x": responseData.nodes[key].x*40,"y": responseData.nodes[key].y*40}
-    });
-    layouts.value = {"nodes": layout_nodes}
-  } catch (error) {
-    console.error('Error fetching data from the backend:', error);
-  }
-};
-
 const updateViewBox = computed(() => {
   if(props.overview && graph.value && props.rectangle){
     const lt_point = {x:props.rectangle.left,y:props.rectangle.top};
@@ -104,24 +59,6 @@ const updateViewBox = computed(() => {
 });
 
 onMounted(() => {
-  const postData = {
-    "time": ["2010-01", "2022-10"],
-    "attributes": {
-      "attribute1": {
-        "name": "price",
-        "range": [10, 20]
-      },
-      "attribute2": {
-        "name": "roe",
-        "range": [0, 1]
-      },
-      "attribute3": {
-        "name": "roic",
-        "range": [0, 1]
-      }
-    }
-  }
-  fetchData(postData);
   // updateViewBox.value;// manually trigger update
 });
 
@@ -170,7 +107,7 @@ watch(() => props.dataConfigs, (newVal) => {
   postData.time = newVal.time;
   postData.indicator = newVal.indicator;
   postData.Algorithm = newVal.algorithm;
-  fetchData(postData);
+  // fetchData(postData);
 });
 
 watch(() => props.selectable, (newVal) =>{

@@ -1,6 +1,7 @@
 <template>
   <div class="graph-container" ref="container">
-    <NetWorkGraph :dataConfigs="$props.dataConfigs"
+    <NetWorkGraph :nodes="$props.nodes" :edges="$props.edges" :layouts="$props.layouts"
+                  :dataConfigs="$props.dataConfigs"
                   :overview=false :scaleRatio=1 :viewBox="$props.detailViewBox"
                   :selectable="selectable"
                   @update-selection="handleUpdateSelection"/>
@@ -16,7 +17,7 @@
 import NetWorkGraph from "@/components/NetWorkGraph.vue";
 export default {
   components: {NetWorkGraph},
-  props: ["dataConfigs","detailViewBox"],
+  props: ["dataConfigs","detailViewBox","nodes","edges","layouts"],
   data() {
     return {
       showInstruction: false,

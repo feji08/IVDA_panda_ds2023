@@ -4,10 +4,12 @@
       <h3>Related view of attributes</h3>
     </v-row>
     <div class="network-graph-container">
-      <NetWorkGraphDetail :netWork="netWork" :dataConfigs="dataConfigs" :detailViewBox="detailViewBox"
+      <NetWorkGraphDetail :nodes="nodes" :edges="edges" :layouts="layouts"
+                          :dataConfigs="dataConfigs" :detailViewBox="detailViewBox"
                           @updateSelection="handleUpdateSelection"/>
       <div class="network-graph-small">
-        <NetWorkGraphSmall :dataConfigs="dataConfigs"
+        <NetWorkGraphSmall :nodes="nodes" :edges="edges" :layouts="layouts"
+                           :dataConfigs="dataConfigs"
                            @updateViewBox="handleUpdateViewBox"/>
       </div>
     </div>
