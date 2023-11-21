@@ -4,7 +4,7 @@
       <h3>Related view of attributes</h3>
     </v-row>
     <div class="network-graph-container">
-      <NetWorkGraphDetail :dataConfigs="dataConfigs" :detailViewBox="detailViewBox"
+      <NetWorkGraphDetail :netWork="netWork" :dataConfigs="dataConfigs" :detailViewBox="detailViewBox"
                           @updateSelection="handleUpdateSelection"/>
       <div class="network-graph-small">
         <NetWorkGraphSmall :dataConfigs="dataConfigs"
@@ -25,6 +25,9 @@ export default {
     return {
       detailViewBox: null,
       dataConfigs: Object,
+      nodes:Object,
+      edges:Object,
+      layouts:Object,
     };
   },
   watch: {
@@ -48,9 +51,75 @@ export default {
         "algorithm": this.selectedAlgorithm,
         "time": this.formattedTimeRange,
       };
+    },
+    getLayoutJSON(){
+      return {
+        "time": ["2010-01", "2022-10"],
+        "attributes": {
+          "attribute1": {
+            "name": "price",
+            "range": [10, 20]
+          },
+          "attribute2": {
+            "name": "roe",
+            "range": [0, 1]
+          },
+          "attribute3": {
+            "name": "roic",
+            "range": [0, 1]
+          }
+        }
+      };
+    },
+    async fetchData(postData) {
+      try {
+        var reqUrl = "http://127.0.0.1:5000/networkGraph/layout"
+        console.log("ReqURL " + reqUrl)
+
+        const requestOptions = {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', // Specify the content type as JSON
+          },
+          body: JSON.stringify(postData), // Convert the postData object to a JSON string
+        };
+
+        // Make the POST request and wait for the response
+        const response = await fetch(reqUrl, requestOptions);
+        const responseData = await response.json();
+
+        this.nodes = {};
+        this.edges = {};
+        this.layouts = {};
+
+        //parse nodes
+        Object.keys(responseData.nodes).forEach((key) => {
+          this.nodes[key] = {"name": responseData.nodes[key].name}
+        });
+        //edges
+        Object.keys(responseData.edges).forEach((key) => {
+          this.edges[key] = {"source": responseData.edges[key].source,
+            "target": responseData.edges[key].target,
+            "width": responseData.edges[key].width,
+            "color": responseData.edges[key].width>0 ? "green": "red"
+          }
+        });
+        //layouts
+        const layout_nodes = {}
+        Object.keys(responseData.nodes).forEach((key) => {
+          layout_nodes[key] = {"x": responseData.nodes[key].x*40,"y": responseData.nodes[key].y*40}
+        });
+        this.layouts = {"nodes": layout_nodes}
+      } catch (error) {
+        console.error('Error fetching data from the backend:', error);
+      }
     }
   },
+  mounted(){
+    const postData = this.getLayoutJSON();
+    this.fetchData(postData)
+  },
 }
+
 </script>
 
 <style>
