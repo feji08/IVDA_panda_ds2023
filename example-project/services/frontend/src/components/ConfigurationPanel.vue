@@ -2,7 +2,7 @@
   <div>
     <v-container fluid="">
       <v-row>
-        <v-col cols="12" md="3">
+        <v-col cols="16" md="4">
           <v-row>
             <v-col cols="12" sm="12">
               <div class="control-panel-font">Swipe to select time period</div>
@@ -25,12 +25,19 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" sm="12">
-              <div class="control-panel-font">Indicator</div>
-            </v-col>
+            <!--  传递的数据！！！ -->
+            <RightBar :key="RightBarId"
+                      :selectedIndicator="indicators.selectedValue"
+                      :selectedAlgorithm="algorithms.selectedValue"
+                      :formattedTimeRange="formattedTimeRange"
+                      @changeCurrentlySelectedIndicator="changeCurrentlyIndicator"
+                      @changeCurrentlySelectedAlgorithm="changeCurrentlyAlgorithm"
+            />
           </v-row>
+        </v-col>
+        <v-col cols="20" md="8">
           <v-row>
-            <v-col cols="12" sm="12">
+            <v-col cols="12" sm="6">
               <v-select
                   :items="indicators.names"
                   label="Select an indicator"
@@ -40,14 +47,7 @@
                   @change="changeIndicator"
               ></v-select>
             </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" sm="12">
-              <div class="control-panel-font">Algorithm</div>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" sm="12">
+            <v-col cols="12" sm="6">
               <v-select
                   :items="algorithms.names"
                   label="Select an algorithm"
@@ -58,21 +58,13 @@
               ></v-select>
             </v-col>
           </v-row>
-        </v-col>
-        <v-col cols="12" md="5">
-          <NetWorkGraphCombo :selectedIndicator="indicators.selectedValue"
-                             :selectedAlgorithm="algorithms.selectedValue"
-                             :formattedTimeRange="formattedTimeRange"/>
-        </v-col>
-        <v-col cols="12" md="4">
-          <!--  传递的数据！！！ -->
-          <RightBar :key="RightBarId"
-                    :selectedIndicator="indicators.selectedValue"
-                    :selectedAlgorithm="algorithms.selectedValue"
-                    :formattedTimeRange="formattedTimeRange"
-                    @changeCurrentlySelectedIndicator="changeCurrentlyIndicator"
-                    @changeCurrentlySelectedAlgorithm="changeCurrentlyAlgorithm"
-          />
+          <v-row>
+            <v-col>
+              <NetWorkGraphCombo :selectedIndicator="indicators.selectedValue"
+                                 :selectedAlgorithm="algorithms.selectedValue"
+                                 :formattedTimeRange="formattedTimeRange"/>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>

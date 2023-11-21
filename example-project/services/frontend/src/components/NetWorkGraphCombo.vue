@@ -155,7 +155,7 @@ export default {
 <style>
 .network-graph-container {
   position: relative;
-  height: 300px;
+  height: 70vh;
   border: 1px solid #adaaaa;
 }
 
