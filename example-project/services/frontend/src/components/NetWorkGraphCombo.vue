@@ -29,6 +29,7 @@ export default {
       nodes:Object,
       edges:Object,
       layouts:Object,
+      selection:[],//name needed instead of id
     };
   },
   watch: {
@@ -43,7 +44,12 @@ export default {
     },
     handleUpdateSelection(selection){
       //After grouping this can be handled
-      console.log(selection)
+      Object.keys(selection).forEach((key) => {
+        this.selection.push(this.nodes[selection[key]].name)
+      });
+      console.log(this.selection)
+      const postData = this.requestForNewNode();
+      this.fetchData(postData,"/networkGraph/newNode");
     },
     updateDataConfigs() {
       // props -> dataConfigs
@@ -52,7 +58,7 @@ export default {
         algorithm: this.selectedAlgorithm,
       };
       const postData = this.requestForLayout();
-      this.fetchData(postData);
+      this.fetchData(postData,"/networkGraph/layout");
     },
     requestForLayout(){
       return {
@@ -89,13 +95,15 @@ export default {
             "name": "roic",
             "range": [0, 1]
           }
-        }
-
+        },
+        "nodes": this.selection,
+        "indicator": this.$props.selectedIndicator,
+        "algorithm": this.$props.selectedAlgorithm
       };
     },
-    async fetchData(postData) {
+    async fetchData(postData,url) {
       try {
-        var reqUrl = "http://127.0.0.1:5000/networkGraph/layout"
+        var reqUrl = "http://127.0.0.1:5000"+url
         console.log("ReqURL " + reqUrl)
 
         const requestOptions = {
@@ -138,7 +146,7 @@ export default {
   },
   mounted(){
     const postData = this.requestForLayout();
-    this.fetchData(postData)
+    this.fetchData(postData,"/networkGraph/layout")
   },
 }
 
