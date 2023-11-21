@@ -85,30 +85,6 @@ watch(selectedNodes, (newVal) => {
   instance.emit('update-selection', newVal);
 });
 
-watch(() => props.dataConfigs, (newVal) => {
-  const postData = {
-    "time": ["2010-01", "2022-10"],
-    "attributes": {
-      "attribute1": {
-        "name": "price",
-        "range": [10, 20]
-      },
-      "attribute2": {
-        "name": "roe",
-        "range": [0, 1]
-      },
-      "attribute3": {
-        "name": "roic",
-        "range": [0, 1]
-      }
-    }
-  }
-  postData.time = newVal.time;
-  postData.indicator = newVal.indicator;
-  postData.Algorithm = newVal.algorithm;
-  // fetchData(postData);
-});
-
 watch(() => props.selectable, (newVal) =>{
     configs.node.selectable = newVal? 2:false;
   }

@@ -48,14 +48,15 @@ export default {
     updateDataConfigs() {
       // props -> dataConfigs
       this.dataConfigs = {
-        "indicator": this.selectedIndicator,
-        "algorithm": this.selectedAlgorithm,
-        "time": this.formattedTimeRange,
+        indicator: this.selectedIndicator,
+        algorithm: this.selectedAlgorithm,
       };
+      const postData = this.requestForLayout();
+      this.fetchData(postData);
     },
-    getLayoutJSON(){
+    requestForLayout(){
       return {
-        "time": ["2010-01", "2022-10"],
+        "time": this.$props.formattedTimeRange,
         "attributes": {
           "attribute1": {
             "name": "price",
@@ -70,6 +71,26 @@ export default {
             "range": [0, 1]
           }
         }
+      };
+    },
+    requestForNewNode(){
+      return {
+        "time": this.$props.formattedTimeRange,
+        "attributes": {
+          "attribute1": {
+            "name": "price",
+            "range": [10, 20]
+          },
+          "attribute2": {
+            "name": "roe",
+            "range": [0, 1]
+          },
+          "attribute3": {
+            "name": "roic",
+            "range": [0, 1]
+          }
+        }
+
       };
     },
     async fetchData(postData) {
@@ -116,7 +137,7 @@ export default {
     }
   },
   mounted(){
-    const postData = this.getLayoutJSON();
+    const postData = this.requestForLayout();
     this.fetchData(postData)
   },
 }
