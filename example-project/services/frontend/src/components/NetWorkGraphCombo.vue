@@ -137,7 +137,7 @@ export default {
         //layouts
         const layout_nodes = {}
         Object.keys(responseData.nodes).forEach((key) => {
-          layout_nodes[key] = {"x": responseData.nodes[key].x*40,"y": responseData.nodes[key].y*40}
+          layout_nodes[key] = {"x": responseData.nodes[key].x*50,"y": responseData.nodes[key].y*50}
         });
         this.layouts = {"nodes": layout_nodes}
       } catch (error) {

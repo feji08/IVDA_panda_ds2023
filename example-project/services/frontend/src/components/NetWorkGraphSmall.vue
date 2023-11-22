@@ -1,7 +1,8 @@
 <template>
   <div class="graph-container" ref="container">
     <NetWorkGraph :nodes="$props.nodes" :edges="$props.edges" :layouts="$props.layouts"
-                  :overview=true :scaleRatio=0.5 :rectangle=rectangle
+                  :overview=true :scaleRatio=0.5 :rectangle=rectangle :indicator="$props.indicator"
+                  @update-focus="handleUpdateFocus"
                   @update-viewBox="handleUpdateViewBox" />
     <div
         class="draggable-rectangle"
@@ -22,7 +23,7 @@
 import NetWorkGraph from './NetWorkGraph';
 export default {
   components: { NetWorkGraph},
-  props: ["nodes","edges","layouts"],
+  props: ["indicator","nodes","edges","layouts"],
   data() {
     return {
       rectanglePosition: { left: 20, top: 20 },
@@ -38,10 +39,6 @@ export default {
   },
   mounted() {
     this.getContainerRect();
-    // change default focus
-    setTimeout(() => {
-      this.rectangle =  {left:20,top:20,right:80,bottom:60}
-    }, 1000);
   },
   methods: {
     getContainerRect(){
@@ -78,6 +75,17 @@ export default {
     },
     stopDragging() {
       this.isDragging = false;
+    },
+    handleUpdateFocus(focus){
+      console.log(focus)
+      this.rectanglePosition.left = focus.x-this.rectangleWidth/2;
+      this.rectanglePosition.top = focus.y-this.rectangleHeight/2;
+      this.rectangle = {
+        left:focus.x-this.rectangleWidth/2,
+        top:focus.y-this.rectangleHeight/2,
+        right:focus.x+this.rectangleWidth/2,
+        bottom:focus.y+this.rectangleHeight/2,
+      }
     },
     handleUpdateViewBox(newViewBox){
       this.$emit('updateViewBox', newViewBox);

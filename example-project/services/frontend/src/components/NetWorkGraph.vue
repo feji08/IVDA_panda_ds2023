@@ -5,10 +5,10 @@
 </template>
 
 <script setup>
-import { VNetworkGraph } from "v-network-graph";
-import "v-network-graph/lib/style.css";
 import * as vNG from "v-network-graph";
-import {onMounted, ref, reactive, defineProps, computed, watch, getCurrentInstance} from "vue";
+import {VNetworkGraph} from "v-network-graph";
+import "v-network-graph/lib/style.css";
+import {computed, defineProps, getCurrentInstance, reactive, ref, watch} from "vue";
 
 const graph = ref(null);
 const instance = getCurrentInstance();
@@ -23,6 +23,7 @@ const props = defineProps({
   nodes:JSON,
   edges: JSON,
   layouts: JSON,
+  indicator:String,
   //props for JSON
   //startTime,endTime,attribute1,attribute2,attribute3,indicator,PCA
 });
@@ -34,7 +35,7 @@ configs.node.selectable = false; //default
 const defaultNodeRadius = 3;
 configs.view.scalingObjects = true;
 configs.view.autoPanAndZoomOnLoad = props.overview? "fit-content":false;
-configs.view.fitContentMargin = 15;
+configs.view.fitContentMargin = -100;
 configs.node.draggable = false;
 configs.node.normal.radius = defaultNodeRadius * props.scaleRatio;
 configs.edge.normal.width = (edge) => edge.width * props.scaleRatio;
@@ -42,6 +43,8 @@ configs.edge.normal.color = (edge) => edge.color;
 configs.edge.normal.dasharray = (edge) => edge.dasharray; // currently not working
 configs.node.label.visible = !props.overview;
 configs.node.label.fontSize = 2;
+configs.node.normal.color = (node) => node.name === props.indicator?  "red":"blue"
+configs.node.label.color = (node) => node.name === props.indicator?  "red":"black"
 
 const updateViewBox = computed(() => {
   if(props.overview && graph.value && props.rectangle){
@@ -57,9 +60,37 @@ const updateViewBox = computed(() => {
   return null;
 });
 
-onMounted(() => {
-  // updateViewBox.value;// manually trigger update
+const updateFocus = computed(() => {
+  let focus_svg={};
+  if(props.indicator && props.nodes && graph.value){
+    Object.keys(props.nodes).forEach((key) => {
+      if(props.nodes[key].name===props.indicator){
+        focus_svg = props.layouts.nodes[key];
+      }
+    });
+    return focus_svg;
+  }
+  return null;
 });
+
+watch(updateFocus,(newVal)=>{
+  if (props.overview && newVal !== null){
+    console.log("new focus computed: ",newVal)
+    const focus_svg = {x:newVal.x,y:newVal.y};
+    console.log("focus_svg: ",focus_svg);
+    //get focus and calculate newViewBox
+    // let box = graph.value?.getViewBox();
+    // const boxWidth = box.bottom-box.top;
+    // const boxHeight = box.right-box.left;
+    // box = {top:focus_svg.y-boxHeight/2,bottom:focus_svg.y+boxHeight/2,
+    //                 left:focus_svg.x-boxWidth/2,right:focus_svg.x+boxWidth/2}
+    // graph.value?.setViewBox(newBox);
+    // graph.value?.panTo(focus_svg);
+    const focus_dom = graph.value.translateFromSvgToDomCoordinates(focus_svg);
+    console.log("focus_dom: ",focus_dom)
+    instance.emit('update-focus', focus_dom);
+  }
+})
 
 watch(updateViewBox, (newVal) => {
   if (newVal !== null) {
@@ -77,7 +108,7 @@ watch(() => props.viewBox, (newVal) => {
     top: newVal.top - bufferY,
     bottom: newVal.bottom + bufferY
   };
-  console.log(bufferedViewBox)
+  // console.log(bufferedViewBox)
   graph.value?.setViewBox(bufferedViewBox)
 });
 
