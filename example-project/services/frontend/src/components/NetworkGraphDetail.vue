@@ -1,7 +1,8 @@
 <template>
   <div class="graph-container" ref="container">
     <NetWorkGraph :nodes="$props.nodes" :edges="$props.edges" :layouts="$props.layouts"
-                  :overview=false :scaleRatio=1 :viewBox="$props.detailViewBox"
+                  :overview=false :scaleRatio=1
+                  :viewBox="$props.detailViewBox" :indicator="$props.indicator"
                   :selectable="selectable"
                   @update-selection="handleUpdateSelection"/>
     <div class="buttons-container">
@@ -16,7 +17,7 @@
 import NetWorkGraph from "@/components/NetWorkGraph.vue";
 export default {
   components: {NetWorkGraph},
-  props: ["detailViewBox","nodes","edges","layouts"],
+  props: ["detailViewBox", "indicator", "nodes", "edges", "layouts"],
   data() {
     return {
       showInstruction: false,
@@ -32,15 +33,15 @@ export default {
     groupNodes() {
       this.showInstruction = false;
       this.selectable = false;
-      if (this.selectedNodes.length===2){
+      if (this.selectedNodes.length === 2) {
         this.$emit('updateSelection', this.selectedNodes);
       }
     },
-    handleUpdateSelection(newSelection){
+    handleUpdateSelection(newSelection) {
       this.selectedNodes = newSelection;
     }
   },
-};
+}
 </script>
 
 <style scoped>

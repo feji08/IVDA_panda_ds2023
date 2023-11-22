@@ -5,10 +5,11 @@
     </v-row>
     <div class="network-graph-container">
       <NetWorkGraphDetail :nodes="nodes" :edges="edges" :layouts="layouts"
-                          :detailViewBox="detailViewBox"
+                          :detailViewBox="detailViewBox" :indicator="$props.selectedIndicator"
                           @updateSelection="handleUpdateSelection"/>
       <div class="network-graph-small">
         <NetWorkGraphSmall :nodes="nodes" :edges="edges" :layouts="layouts"
+                           :indicator="$props.selectedIndicator"
                            @updateViewBox="handleUpdateViewBox"/>
       </div>
     </div>
