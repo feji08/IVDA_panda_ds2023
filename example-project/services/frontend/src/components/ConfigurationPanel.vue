@@ -80,7 +80,7 @@ export default {
   components: {NetWorkGraphCombo, RightBar},
   data: () => ({
     selectedTimeRange: [new Date('2010-01').getTime(), new Date('2022-12').getTime()],
-    formattedTimeRange: ['2010-01','2022-12c'],
+    formattedTimeRange: ['2010-01','2022-12'],
     indicators: {
       names: ['revenue', 'netIncome', 'eps', 'grossProfit'],
       selectedValue: 'revenue',
