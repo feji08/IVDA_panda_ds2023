@@ -17,6 +17,7 @@
                   :step="30 * 24 * 60 * 60 * 1000"
                   thumb-label="always"
                   class="my-custom-thumb-label"
+                  @mouseup="handleSliderChange"
               >
                 <template v-slot:thumb-label="{ modelValue }">
                   {{ formatTimestamp(modelValue) }}
@@ -79,6 +80,7 @@ export default {
   components: {NetWorkGraphCombo, RightBar},
   data: () => ({
     selectedTimeRange: [new Date('2010-01').getTime(), new Date('2022-12').getTime()],
+    formattedTimeRange: ['2010-01','2022-12c'],
     indicators: {
       names: ['revenue', 'netIncome', 'eps', 'grossProfit'],
       selectedValue: 'revenue',
@@ -101,15 +103,13 @@ export default {
       const month = String(date.getMonth() + 1).padStart(2, '0');
       return `${year}-${month}`;
     },
+    handleSliderChange(){
+      this.formattedTimeRange = this.selectedTimeRange.map(timestamp => this.formatTimestamp(timestamp));
+      console.log('handleSliderChange:',this.formattedTimeRange)
+    },
     handleChildBrushEnd(){
 
     }
-  },
-  computed: {
-    formattedTimeRange() {
-      // 格式化日期范围为 "YYYY-MM" 形式
-      return this.selectedTimeRange.map((timestamp) => this.formatTimestamp(timestamp));
-    },
   },
 }
 </script>
