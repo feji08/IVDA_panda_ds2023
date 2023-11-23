@@ -13,3 +13,12 @@
     These histograms are **linked** to each other, with blue-highlighting area indicating the intersections.
 
 ### 3. Bar Chart
+
+
+## Sketch
+### To run frontend:
+In frontend folder,
+-  delete node_modules
+-  run the following in terminal:
+      npm install
+      npm run serve
