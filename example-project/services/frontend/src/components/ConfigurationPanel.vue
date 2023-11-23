@@ -25,13 +25,15 @@
             </v-col>
           </v-row>
           <v-row>
+            <v-col cols="12" sm="12">
+              <div class="control-panel-font">Swipe to cross filter data</div>
+            </v-col>
+          </v-row>
+          <v-row>
             <!--  传递的数据！！！ -->
             <RightBar :key="RightBarId"
-                      :selectedIndicator="indicators.selectedValue"
-                      :selectedAlgorithm="algorithms.selectedValue"
                       :formattedTimeRange="formattedTimeRange"
-                      @changeCurrentlySelectedIndicator="changeCurrentlyIndicator"
-                      @changeCurrentlySelectedAlgorithm="changeCurrentlyAlgorithm"
+                      @brushEnd="handleChildBrushEnd"
             />
           </v-row>
         </v-col>
@@ -99,6 +101,9 @@ export default {
       const month = String(date.getMonth() + 1).padStart(2, '0');
       return `${year}-${month}`;
     },
+    handleChildBrushEnd(){
+
+    }
   },
   computed: {
     formattedTimeRange() {
