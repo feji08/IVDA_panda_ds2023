@@ -315,9 +315,5 @@ export default {
 };
 </script>
 <style>
-/* Add any custom CSS styles here */
-//pre#data {
-//  display: none;
-//}
 @import "../assets/dc.css";
 </style>
