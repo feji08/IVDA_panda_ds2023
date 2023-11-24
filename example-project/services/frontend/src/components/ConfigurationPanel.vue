@@ -33,8 +33,10 @@
           <v-row>
             <!--  传递的数据！！！ -->
             <RightBar :key="RightBarId"
+                      :selectedIndicator="indicators.selectedValue"
+                      :selectedAlgorithm="algorithms.selectedValue"
                       :formattedTimeRange="formattedTimeRange"
-                      @brushEnd="handleChildBrushEnd"
+                      @crossfilterDataChanged="handleCrossfilterDataChange"
             />
           </v-row>
         </v-col>
@@ -89,12 +91,8 @@ export default {
       names: ['PCA', 'K-Means'],
       selectedValue: 'PCA',
     },
-    methods: {
-      changeIndicator() {
-        // 处理公司选择的变化
-        //console.log('Selected Indicator:', this.indicators.selectedValue);
-      },
-    },
+    //这是传递的数据
+    SelectedCrossfilterDataRange: [0, 1, 55279300, 45126800000, -1.2, 1.2],
   }),
   methods: {
     formatTimestamp(timestamp) {
@@ -107,8 +105,9 @@ export default {
       this.formattedTimeRange = this.selectedTimeRange.map(timestamp => this.formatTimestamp(timestamp));
       console.log('handleSliderChange:',this.formattedTimeRange)
     },
-    handleChildBrushEnd(){
-
+    handleCrossfilterDataChange(newData){
+      this.SelectedCrossfilterDataRange = newData
+      console.log('handleCrossfilterDataChange:',this.SelectedCrossfilterDataRange)
     }
   },
 }

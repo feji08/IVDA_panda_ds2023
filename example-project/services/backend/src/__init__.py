@@ -42,7 +42,7 @@ class StocksPrice(Resource):
 
 
 class StocksAttributes(Resource):
-    def get(self):
+    def post(self):
         json_data = request.get_json()  # 获取前端传入的 JSON 数据
         time_conditions = json_data.get("time", [])  # 获取时间条件
         attribute_conditions = json_data.get("attributes", {})  # 获取属性条件
@@ -116,7 +116,7 @@ def compute_coefficient(df, indicator, node_1, node_2):
 
 
 class StocksCoefficient(Resource):
-    def get(self):
+    def post(self):
         json_data = request.get_json()  # 获取前端传入的 JSON 数据
         time_conditions = json_data.get("time", [])  # 获取时间条件
         attribute_conditions = json_data.get("attributes", {})  # 获取属性条件
