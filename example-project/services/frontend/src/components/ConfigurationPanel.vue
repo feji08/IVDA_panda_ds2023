@@ -68,7 +68,8 @@
               <NetWorkGraphCombo :selectedIndicator="indicators.selectedValue"
                                  :selectedAlgorithm="algorithms.selectedValue"
                                  :formattedTimeRange="formattedTimeRange"
-                                 @@updateSelection="handleUpdateSelection"/>
+                                 :SelectedCrossfilterDataRange="SelectedCrossfilterDataRange"
+                                 @updateSelection="handleUpdateSelection"/>
             </v-col>
           </v-row>
         </v-col>

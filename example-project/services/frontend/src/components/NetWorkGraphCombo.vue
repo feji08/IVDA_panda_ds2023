@@ -22,7 +22,7 @@ import NetWorkGraphSmall from "./NetWorkGraphSmall";
 
 export default {
   components: {NetWorkGraphDetail, NetWorkGraphSmall},
-  props: ["selectedIndicator","selectedAlgorithm","formattedTimeRange"],
+  props: ["selectedIndicator","selectedAlgorithm","formattedTimeRange","SelectedCrossfilterDataRange"],
   data() {
     return {
       detailViewBox: null,
@@ -67,16 +67,16 @@ export default {
         "time": this.$props.formattedTimeRange,
         "attributes": {
           "attribute1": {
-            "name": "price",
-            "range": [10, 20]
+            "name": "assetTurnover",
+            "range": [this.$props.SelectedCrossfilterDataRange[0], this.$props.SelectedCrossfilterDataRange[1]]
           },
           "attribute2": {
-            "name": "roe",
-            "range": [0, 1]
+            "name": "revenue",
+            "range": [this.$props.SelectedCrossfilterDataRange[2], this.$props.SelectedCrossfilterDataRange[3]]
           },
           "attribute3": {
-            "name": "roic",
-            "range": [0, 1]
+            "name": "roe",
+            "range": [this.$props.SelectedCrossfilterDataRange[4], this.$props.SelectedCrossfilterDataRange[5]]
           }
         }
       };
