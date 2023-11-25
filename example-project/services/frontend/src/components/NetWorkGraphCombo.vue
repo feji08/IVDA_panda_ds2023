@@ -26,7 +26,6 @@ export default {
   data() {
     return {
       detailViewBox: null,
-      dataConfigs: Object,
       nodes:Object,
       edges:Object,
       layouts:Object,
@@ -37,6 +36,10 @@ export default {
     selectedIndicator: "updateDataConfigs",
     selectedAlgorithm: "updateDataConfigs",
     formattedTimeRange: "updateDataConfigs",
+    SelectedCrossfilterDataRange: {
+      handler: "updateDataConfigs",
+      deep: true,
+    },
   },
   methods:{
     handleUpdateViewBox(newViewBox){
@@ -54,12 +57,8 @@ export default {
       this.fetchData(postData,"/networkGraph/newNode");
     },
     updateDataConfigs() {
-      // props -> dataConfigs
-      this.dataConfigs = {
-        indicator: this.selectedIndicator,
-        algorithm: this.selectedAlgorithm,
-      };
       const postData = this.requestForLayout();
+      console.log("update dataConfigs",postData)
       this.fetchData(postData,"/networkGraph/layout");
     },
     requestForLayout(){
@@ -86,16 +85,16 @@ export default {
         "time": this.$props.formattedTimeRange,
         "attributes": {
           "attribute1": {
-            "name": "price",
-            "range": [10, 20]
+            "name": "assetTurnover",
+            "range": [this.$props.SelectedCrossfilterDataRange[0], this.$props.SelectedCrossfilterDataRange[1]]
           },
           "attribute2": {
-            "name": "roe",
-            "range": [0, 1]
+            "name": "revenue",
+            "range": [this.$props.SelectedCrossfilterDataRange[2], this.$props.SelectedCrossfilterDataRange[3]]
           },
           "attribute3": {
-            "name": "roic",
-            "range": [0, 1]
+            "name": "roe",
+            "range": [this.$props.SelectedCrossfilterDataRange[4], this.$props.SelectedCrossfilterDataRange[5]]
           }
         },
         "nodes": this.selection,
@@ -149,6 +148,7 @@ export default {
   mounted(){
     this.$emit('updateSelection', ["",""]);
     const postData = this.requestForLayout();
+    console.log("mounted postData",postData)
     this.fetchData(postData,"/networkGraph/layout")
   },
 }
