@@ -67,7 +67,8 @@
             <v-col>
               <NetWorkGraphCombo :selectedIndicator="indicators.selectedValue"
                                  :selectedAlgorithm="algorithms.selectedValue"
-                                 :formattedTimeRange="formattedTimeRange"/>
+                                 :formattedTimeRange="formattedTimeRange"
+                                 @@updateSelection="handleUpdateSelection"/>
             </v-col>
           </v-row>
         </v-col>
@@ -93,6 +94,8 @@ export default {
     },
     //这是传递的数据
     SelectedCrossfilterDataRange: [0, 1, 55279300, 45126800000, -1.2, 1.2],
+    //这是传递的数据
+    selectedNodes: ["",""],
   }),
   methods: {
     formatTimestamp(timestamp) {
@@ -108,6 +111,9 @@ export default {
     handleCrossfilterDataChange(newData){
       this.SelectedCrossfilterDataRange = newData
       console.log('handleCrossfilterDataChange:',this.SelectedCrossfilterDataRange)
+    },
+    handleUpdateSelection(newVal){
+      this.selectedNodes = newVal;
     }
   },
 }

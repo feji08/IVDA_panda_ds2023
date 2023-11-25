@@ -72,7 +72,16 @@ const updateFocus = computed(() => {
   }
   return null;
 });
-
+// const updateSelection = computed(() => {
+//   if(selectedNodes.value.length===0){
+//     return ["",""];
+//   }else{
+//     const attribute1 = props.nodes[selectedNodes.value[0]].name
+//     const attribute2 = props.nodes[selectedNodes.value[1]].name
+//     console.log([attribute1,attribute2])
+//     return [attribute1,attribute2]
+//   }
+// });
 watch(updateFocus,(newVal)=>{
   if (props.overview && newVal !== null){
     console.log("new focus computed: ",newVal)

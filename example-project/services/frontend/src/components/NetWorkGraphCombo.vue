@@ -49,6 +49,7 @@ export default {
         this.selection.push(this.nodes[selection[key]].name)
       });
       console.log(this.selection)
+      this.$emit('updateSelection', this.selection);
       const postData = this.requestForNewNode();
       this.fetchData(postData,"/networkGraph/newNode");
     },
@@ -146,6 +147,7 @@ export default {
     }
   },
   mounted(){
+    this.$emit('updateSelection', ["",""]);
     const postData = this.requestForLayout();
     this.fetchData(postData,"/networkGraph/layout")
   },
