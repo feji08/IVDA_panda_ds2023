@@ -29,26 +29,62 @@ const props = defineProps({
 });
 
 const selectedNodes = ref(["node1"]);
-const configs = reactive(vNG.getFullConfigs())
-configs.node.selectable = false; //default
+
+const initialConfigs = vNG.defineConfigs({
+    node:{
+      selectable : false, //default
+      draggable: false,
+      normal: {
+        strokeColor: "white",
+        strokeWidth: 2,
+        radius: 6 * props.scaleRatio,
+        color: (node) => node.name === props.indicator?  "red":"blue",
+      },
+      // selected: {
+      //   strokeColor: "yellow",
+      //   strokeWidth: 2,
+      //   radius: 6 * props.scaleRatio,
+      //   color: (node) => node.name === props.indicator?  "red":"blue",
+      // },
+      label: {
+        visible: !props.overview,
+        fontSize: 6,
+        color: (node) => node.name === props.indicator?  "red":"black",
+      }
+    },
+    edge:{
+      normal:{
+        width: (edge) => edge.width * props.scaleRatio,
+        color: (edge) => edge.color,
+        dasharray: (edge) => edge.dasharray, // currently not working
+      }
+    },
+    view: {
+      autoPanAndZoomOnLoad: props.overview? "fit-content":false,
+      fitContentMargin: -100,
+    }
+  }
+)
+const configs = reactive(initialConfigs)
+// configs.node.selectable = false; //default
 // configs.node.selected.strokeColor = "yellow";
 // configs.node.selected.strokeWidth = 2;
-configs.node.normal.strokeColor = "white"
-configs.node.normal.strokeWidth = 1;
+// configs.node.normal.strokeColor = "white"
+// configs.node.normal.strokeWidth = 1;
 
-const defaultNodeRadius = 6;
+
 // configs.view.scalingObjects = true;
-configs.view.autoPanAndZoomOnLoad = props.overview? "fit-content":false;
-configs.view.fitContentMargin = -100;
-configs.node.draggable = false;
-configs.node.normal.radius = defaultNodeRadius * props.scaleRatio;
-configs.edge.normal.width = (edge) => edge.width * props.scaleRatio;
-configs.edge.normal.color = (edge) => edge.color;
-configs.edge.normal.dasharray = (edge) => edge.dasharray; // currently not working
-configs.node.label.visible = !props.overview;
-configs.node.label.fontSize = 6;
-configs.node.normal.color = (node) => node.name === props.indicator?  "red":"blue"
-configs.node.label.color = (node) => node.name === props.indicator?  "red":"black"
+// configs.view.autoPanAndZoomOnLoad = props.overview? "fit-content":false;
+// configs.view.fitContentMargin = -100;
+// configs.node.draggable = false;
+// configs.node.normal.radius = defaultNodeRadius * props.scaleRatio;
+// configs.edge.normal.width = (edge) => edge.width * props.scaleRatio;
+// configs.edge.normal.color = (edge) => edge.color;
+// configs.edge.normal.dasharray = (edge) => edge.dasharray; // currently not working
+// configs.node.label.visible = !props.overview;
+// configs.node.label.fontSize = 6;
+// configs.node.normal.color = (node) => node.name === props.indicator?  "red":"blue"
+// configs.node.label.color = (node) => node.name === props.indicator?  "red":"black"
 
 const updateViewBox = computed(() => {
   if(props.overview && graph.value && props.rectangle){
