@@ -63,7 +63,7 @@ const initialConfigs = vNG.defineConfigs({
     },
     edge:{
       normal:{
-        width: (edge) => edge.width * props.scaleRatio,
+        width: (edge) => 2 * edge.width * props.scaleRatio,
         color: (edge) => edge.color,
         dasharray: (edge) => edge.dasharray, // currently not working
       }

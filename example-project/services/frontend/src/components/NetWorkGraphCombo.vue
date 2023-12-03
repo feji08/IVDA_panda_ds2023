@@ -102,6 +102,28 @@ export default {
         "algorithm": this.$props.selectedAlgorithm
       };
     },
+    mapWidthToColor(width) {
+      const colorMap = {
+        0.9: "#386641",
+        0.8: "#6a994e",
+        0.7: "#a7c957",
+        0.6: "#a7c957",
+        0: "#a7c957",
+        "-0.6": "#e5383b",
+        "-0.7": "#ba181b",
+        "-0.8": "#ba181b",
+        "-0.9": "#ba181b",
+        default: "#660708"
+      };
+      const sortedKeys = Object.keys(colorMap).map(parseFloat).sort((a, b) => b - a);
+      for (let i = 0; i < sortedKeys.length; i++) {
+        const currentKey = sortedKeys[i];
+        if (width >= currentKey) {
+          return colorMap[currentKey];
+        }
+      }
+      return colorMap.default;
+    },
     async fetchData(postData,url) {
       try {
         var reqUrl = "http://127.0.0.1:5000"+url
@@ -131,7 +153,7 @@ export default {
           this.edges[key] = {"source": responseData.edges[key].source,
             "target": responseData.edges[key].target,
             "width": responseData.edges[key].width,
-            "color": responseData.edges[key].width>0 ? "green": "red"
+            "color": this.mapWidthToColor(responseData.edges[key].width)
           }
         });
         //layouts
