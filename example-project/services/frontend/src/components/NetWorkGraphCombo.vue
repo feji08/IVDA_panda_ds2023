@@ -152,7 +152,7 @@ export default {
         Object.keys(responseData.edges).forEach((key) => {
           this.edges[key] = {"source": responseData.edges[key].source,
             "target": responseData.edges[key].target,
-            "width": responseData.edges[key].width,
+            "width": Math.abs(responseData.edges[key].width),
             "color": this.mapWidthToColor(responseData.edges[key].width)
           }
         });
@@ -181,7 +181,8 @@ export default {
 .network-graph-container {
   position: relative;
   height: 70vh;
-  border: 1px solid #adaaaa;
+  background: #f8f9fa;
+  //border: 1px solid #adaaaa;
 }
 
 .network-graph-small {
