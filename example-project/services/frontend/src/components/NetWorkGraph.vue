@@ -28,12 +28,16 @@ const props = defineProps({
   //startTime,endTime,attribute1,attribute2,attribute3,indicator,PCA
 });
 
-const selectedNodes = ref([]);
+const selectedNodes = ref(["node1"]);
 const configs = reactive(vNG.getFullConfigs())
 configs.node.selectable = false; //default
+// configs.node.selected.strokeColor = "yellow";
+// configs.node.selected.strokeWidth = 2;
+configs.node.normal.strokeColor = "white"
+configs.node.normal.strokeWidth = 1;
 
-const defaultNodeRadius = 3;
-configs.view.scalingObjects = true;
+const defaultNodeRadius = 6;
+// configs.view.scalingObjects = true;
 configs.view.autoPanAndZoomOnLoad = props.overview? "fit-content":false;
 configs.view.fitContentMargin = -100;
 configs.node.draggable = false;
@@ -42,7 +46,7 @@ configs.edge.normal.width = (edge) => edge.width * props.scaleRatio;
 configs.edge.normal.color = (edge) => edge.color;
 configs.edge.normal.dasharray = (edge) => edge.dasharray; // currently not working
 configs.node.label.visible = !props.overview;
-configs.node.label.fontSize = 2;
+configs.node.label.fontSize = 6;
 configs.node.normal.color = (node) => node.name === props.indicator?  "red":"blue"
 configs.node.label.color = (node) => node.name === props.indicator?  "red":"black"
 
