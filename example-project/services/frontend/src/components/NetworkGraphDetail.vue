@@ -77,6 +77,15 @@ export default {
   position: relative;
 }
 
+.title-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 10px;
+  border: 1px solid rgba(134, 134, 246, 0.3);
+}
+
 .buttons-container {
   position: absolute;
   bottom: 10px;

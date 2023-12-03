@@ -71,6 +71,9 @@ const initialConfigs = vNG.defineConfigs({
     view: {
       autoPanAndZoomOnLoad: props.overview? "fit-content":false,
       fitContentMargin: -100,
+    },
+    grid: {
+      visible: props.overview? false: true,
     }
   }
 )

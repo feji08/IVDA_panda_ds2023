@@ -1,7 +1,10 @@
 <template>
   <div>
-    <v-row align="center" justify="center" class="mt-0.5 mb-0">
-      <h3>Related view of attributes</h3>
+    <v-row class="mt-0.5 mb-0 ml-1">
+      <h3>Pairwise Correlation Coefficients of Stock Attributes</h3>
+    </v-row>
+    <v-row class="mt-0.5 mb-0 ml-1">
+      <LegendForGraph/>
     </v-row>
     <div class="network-graph-container">
       <NetWorkGraphDetail :nodes="nodes" :edges="edges" :layouts="layouts"
@@ -19,9 +22,10 @@
 <script>
 import NetWorkGraphDetail from './NetworkGraphDetail';
 import NetWorkGraphSmall from "./NetWorkGraphSmall";
+import LegendForGraph from "@/components/LegendForGraph.vue";
 
 export default {
-  components: {NetWorkGraphDetail, NetWorkGraphSmall},
+  components: {LegendForGraph, NetWorkGraphDetail, NetWorkGraphSmall},
   props: ["selectedIndicator","selectedAlgorithm","formattedTimeRange","SelectedCrossfilterDataRange"],
   data() {
     return {
