@@ -144,9 +144,19 @@ export default {
         this.edges = {};
         this.layouts = {};
 
+        const nameMap = {
+          "researchAndDdevelopementToRevenue": "R&D to Rev",
+          "researchAndDevelopmentExpenses": "R&D Expenses",
+          // "cashFlowToDebtRatio": "CFDR",
+          "operatingCashFlowPerShare": "OCFPS",
+        };
+
+
         //parse nodes
         Object.keys(responseData.nodes).forEach((key) => {
-          this.nodes[key] = {"name": responseData.nodes[key].name}
+          const longName = responseData.nodes[key].name;
+          const shortName = nameMap[longName] || longName;
+          this.nodes[key] = { "name": shortName };
         });
         //edges
         Object.keys(responseData.edges).forEach((key) => {
