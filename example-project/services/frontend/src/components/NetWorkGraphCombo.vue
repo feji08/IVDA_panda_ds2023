@@ -104,15 +104,15 @@ export default {
     },
     mapWidthToColor(width) {
       const colorMap = {
-        0.9: "#386641",
-        0.8: "#6a994e",
-        0.7: "#a7c957",
-        0.6: "#a7c957",
-        0: "#a7c957",
-        "-0.6": "#e5383b",
-        "-0.7": "#ba181b",
-        "-0.8": "#ba181b",
-        "-0.9": "#ba181b",
+        0.9: "#023E8A",
+        0.8: "#0096C7",
+        0.7: "#48CAE4",
+        0.6: "#ADE8F4",
+        0: "#caf0f8",
+        "-0.6": "#F9BD9D",
+        "-0.7": "#F8AB81",
+        "-0.8": "#F58A51",
+        "-0.9": "#F05D0E",
         default: "#660708"
       };
       const sortedKeys = Object.keys(colorMap).map(parseFloat).sort((a, b) => b - a);

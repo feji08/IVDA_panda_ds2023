@@ -1,7 +1,9 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
-      <h2>Stock Exploring</h2>
+    <v-app-bar app color="#081460" dark>
+      <div class="header-container">
+        <h2>Stock Exploring</h2>
+      </div>
     </v-app-bar>
     <v-main>
       <ConfigurationPanel/>
@@ -35,5 +37,10 @@ html {
 }
 html::-webkit-scrollbar {
   width: 0px; /* For Chrome, Safari, and Opera */
+}
+.header-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 200px;
 }
 </style>

@@ -38,32 +38,32 @@ const initialConfigs = vNG.defineConfigs({
         // type: (node) => node.name === 'new_pca_node' ? "rect":"circle",
         strokeColor: (node) => node.name === 'new_pca_node' ? "red":"white",
         strokeWidth: 2,
-        radius: 6 * props.scaleRatio,
+        radius: 8 * props.scaleRatio,
         // borderRadius: 6 * props.scaleRatio,
         // radius: (node) => node.name === "new_pcs_node"? 6 * props.scaleRatio: undefined,
         // width: 6 * props.scaleRatio,
         // height: 6 * props.scaleRatio,
-        color: (node) => node.name === props.indicator?  "red":"blue",
+        color: (node) => node.name === props.indicator?  "#f14249":"#2c60d0",
       },
       selected: {
         type: "circle",
-        strokeColor: "yellow",
+        strokeColor: "#f35b04",
         strokeWidth: 2,
         radius: 6 * props.scaleRatio,
-        color: (node) => node.name === props.indicator?  "red":"blue",
+        color: (node) => node.name === props.indicator?  "red":"#f7b801",
       },
       focusring: {
         visible: false,
       },
       label: {
         visible: !props.overview,
-        fontSize: 6,
+        fontSize: 9,
         color: (node) => node.name === props.indicator?  "red":"black",
       }
     },
     edge:{
       normal:{
-        width: (edge) => 2 * edge.width * props.scaleRatio,
+        width: (edge) => 3 * edge.width * props.scaleRatio,
         color: (edge) => edge.color,
         dasharray: (edge) => edge.dasharray, // currently not working
       }
