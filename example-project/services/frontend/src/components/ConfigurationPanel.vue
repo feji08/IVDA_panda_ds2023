@@ -119,3 +119,15 @@ export default {
   },
 }
 </script>
+
+
+<style>
+.control-panel-font {
+  font-size: 14px;
+}
+
+.v-range-slider .v-slider-thumb__label {
+  min-width: 60px;
+}
+
+</style>
