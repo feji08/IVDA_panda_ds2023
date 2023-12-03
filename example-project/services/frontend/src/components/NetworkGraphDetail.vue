@@ -6,9 +6,35 @@
                   :selectable="selectable"
                   @update-selection="handleUpdateSelection"/>
     <div class="buttons-container">
-      <div class="instruction" v-show="showInstruction">"SHIFT" to select two nodes</div>
-      <button class="grouping-button" @click="startSelection">SELECT</button>
-      <button class="confirming-button" @click="groupNodes">GROUP</button>
+      <div
+          class="instruction"
+          v-show="showSelectInstruction || showGroupInstruction"
+      >
+        <span v-if="showSelectInstruction">
+          Select two nodes <br>to see how two attributes together influence indicator. <br>
+          <br>
+          Hint: use "SHIFT" to select two nodes
+        </span>
+        <span v-if="showGroupInstruction">
+          Click here for confirmation.
+        </span>
+      </div>
+      <button
+          class="grouping-button"
+          @click="startSelection"
+          @mouseover="showSelectInstruction = true"
+          @mouseleave="showSelectInstruction = false"
+      >
+        SELECT
+      </button>
+      <button
+          class="confirming-button"
+          @click="groupNodes"
+          @mouseover="showGroupInstruction = true"
+          @mouseleave="showGroupInstruction = false"
+      >
+        GROUP
+      </button>
     </div>
   </div>
 </template>
@@ -23,6 +49,8 @@ export default {
       showInstruction: false,
       selectable: false,
       selectedNodes: {},
+      showSelectInstruction: false,
+      showGroupInstruction: false
     };
   },
   methods: {
@@ -58,7 +86,7 @@ export default {
 }
 
 .instruction {
-  font-size: 8px;
+  font-size: 11px;
   color: #333; /* Set text color */
   position: absolute;
   bottom: 25px; /* Adjust the top position to create space above buttons */
@@ -75,6 +103,12 @@ export default {
 .grouping-button:hover,
 .confirming-button:hover {
   background-color: rgba(134, 134, 246, 0.3);
+}
+
+/* hover to show test */
+.grouping-button:hover + .instruction,
+.confirming-button:hover + .instruction {
+  display: block;
 }
 
 </style>
