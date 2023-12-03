@@ -28,24 +28,33 @@ const props = defineProps({
   //startTime,endTime,attribute1,attribute2,attribute3,indicator,PCA
 });
 
-const selectedNodes = ref(["node1"]);
+const selectedNodes = ref([]);
 
 const initialConfigs = vNG.defineConfigs({
     node:{
       selectable : false, //default
       draggable: false,
       normal: {
-        strokeColor: "white",
+        // type: (node) => node.name === 'new_pca_node' ? "rect":"circle",
+        strokeColor: (node) => node.name === 'new_pca_node' ? "red":"white",
+        strokeWidth: 2,
+        radius: 6 * props.scaleRatio,
+        // borderRadius: 6 * props.scaleRatio,
+        // radius: (node) => node.name === "new_pcs_node"? 6 * props.scaleRatio: undefined,
+        // width: 6 * props.scaleRatio,
+        // height: 6 * props.scaleRatio,
+        color: (node) => node.name === props.indicator?  "red":"blue",
+      },
+      selected: {
+        type: "circle",
+        strokeColor: "yellow",
         strokeWidth: 2,
         radius: 6 * props.scaleRatio,
         color: (node) => node.name === props.indicator?  "red":"blue",
       },
-      // selected: {
-      //   strokeColor: "yellow",
-      //   strokeWidth: 2,
-      //   radius: 6 * props.scaleRatio,
-      //   color: (node) => node.name === props.indicator?  "red":"blue",
-      // },
+      focusring: {
+        visible: false,
+      },
       label: {
         visible: !props.overview,
         fontSize: 6,
