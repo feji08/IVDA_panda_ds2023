@@ -1,7 +1,19 @@
 <template>
-  <v-network-graph v-model:selected-nodes="selectedNodes"
+  <div class="tooltip-wrapper">
+    <v-network-graph v-model:selected-nodes="selectedNodes"
                    :nodes="$props.nodes" :edges="$props.edges" :layouts="$props.layouts"
-                   :configs="configs" ref="graph"/>
+                   :configs="configs" ref="graph"
+                   :event-handlers="eventHandlers"/>
+    <div
+        ref="tooltip"
+        class="tooltip"
+        :style="{ ...tooltipPos, opacity: tooltipOpacity }"
+    >
+      <div>
+        {{ targetNodeId!==""&& props.nodes[targetNodeId].name ? props.nodes[targetNodeId].name : "" }}
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -11,7 +23,23 @@ import "v-network-graph/lib/style.css";
 import {computed, defineProps, getCurrentInstance, reactive, ref, watch} from "vue";
 
 const graph = ref(null);
+const tooltip = ref(null);
+const layouts = ref(props.layouts);
+const targetNodeId = ref("")
+const tooltipOpacity = ref(0) // 0 or 1
+const tooltipPos = ref({ left: "0px", top: "0px" })
 const instance = getCurrentInstance();
+const NODE_RADIUS = 8;
+
+const targetNodePos = computed(() => {
+  const layoutValue = layouts.value;
+  if (layoutValue && layoutValue.nodes) {
+    const nodePos = layoutValue.nodes[targetNodeId.value];
+    return nodePos || { x: 0, y: 0 };
+  } else {
+    return { x: 0, y: 0 };
+  }
+});
 
 const props = defineProps({
   overview: Boolean,
@@ -49,7 +77,7 @@ const initialConfigs = vNG.defineConfigs({
         type: "circle",
         strokeColor: "#f35b04",
         strokeWidth: 2,
-        radius: 6 * props.scaleRatio,
+        radius: NODE_RADIUS * props.scaleRatio,
         color: (node) => node.name === props.indicator?  "red":"#f7b801",
       },
       focusring: {
@@ -73,30 +101,11 @@ const initialConfigs = vNG.defineConfigs({
       fitContentMargin: -100,
     },
     grid: {
-      visible: props.overview? false: true,
+      visible: !props.overview,
     }
   }
 )
 const configs = reactive(initialConfigs)
-// configs.node.selectable = false; //default
-// configs.node.selected.strokeColor = "yellow";
-// configs.node.selected.strokeWidth = 2;
-// configs.node.normal.strokeColor = "white"
-// configs.node.normal.strokeWidth = 1;
-
-
-// configs.view.scalingObjects = true;
-// configs.view.autoPanAndZoomOnLoad = props.overview? "fit-content":false;
-// configs.view.fitContentMargin = -100;
-// configs.node.draggable = false;
-// configs.node.normal.radius = defaultNodeRadius * props.scaleRatio;
-// configs.edge.normal.width = (edge) => edge.width * props.scaleRatio;
-// configs.edge.normal.color = (edge) => edge.color;
-// configs.edge.normal.dasharray = (edge) => edge.dasharray; // currently not working
-// configs.node.label.visible = !props.overview;
-// configs.node.label.fontSize = 6;
-// configs.node.normal.color = (node) => node.name === props.indicator?  "red":"blue"
-// configs.node.label.color = (node) => node.name === props.indicator?  "red":"black"
 
 const updateViewBox = computed(() => {
   if(props.overview && graph.value && props.rectangle){
@@ -180,9 +189,56 @@ watch(selectedNodes, (newVal) => {
 watch(() => props.selectable, (newVal) =>{
     configs.node.selectable = newVal? 2:false;
   }
-)
+);
+
+watch(
+    () => [targetNodePos.value, tooltipOpacity.value],
+    () => {
+      if (!graph.value || !tooltip.value) return
+
+      // translate coordinates: SVG -> DOM
+      const domPoint = graph.value.translateFromSvgToDomCoordinates(targetNodePos.value)
+      // calculates top-left position of the tooltip.
+      tooltipPos.value = {
+        left: domPoint.x - tooltip.value.offsetWidth / 2 + "px",
+        top: domPoint.y - NODE_RADIUS - tooltip.value.offsetHeight - 10 + "px",
+      }
+    },
+    { deep: true }
+);
+const eventHandlers = {
+  "node:pointerover": function ({ node }) {
+    targetNodeId.value = node;
+    tooltipOpacity.value = 1; // show
+  },
+  "node:pointerout": function () {
+    tooltipOpacity.value = 0; // hide
+  },
+};
 
 </script>
 
 <style>
+.tooltip-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.tooltip {
+  top: 0;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  width: 80px;
+  height: 36px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  font-size: 12px;
+  background-color: #fff0bd;
+  border: 1px solid #ffb950;
+  box-shadow: 2px 2px 2px #aaa;
+  transition: opacity 0.2s linear;
+  pointer-events: none;
+}
 </style>
