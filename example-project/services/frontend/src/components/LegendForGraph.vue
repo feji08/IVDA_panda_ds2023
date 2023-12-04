@@ -3,10 +3,14 @@
     <div class="item-container">
       <div class="label bottom-label">stock attributes:</div>
       <div class="dot-container">
-        <div class="dot blue-dot"></div>
-        <div class="label dot-label">normal attribute</div>
-        <div class="dot red-dot"></div>
-        <div class="label dot-label">indicator attribute</div>
+        <div class="dot-item-container">
+          <div class="dot blue-dot"></div>
+          <div class="label dot-label">normal attribute</div>
+        </div>
+        <div class="dot-item-container">
+          <div class="dot red-dot"></div>
+          <div class="label dot-label">indicator attribute</div>
+        </div>
       </div>
     </div>
     <div class="item-container">
@@ -25,7 +29,7 @@
 export default {
   methods: {
     getLineStyle(width) {
-      const lineWidth = 20;
+      const lineWidth = 10;
       const lineHeight = 3;
       const lineColor = this.mapWidthToColor(width);
       return {
@@ -63,20 +67,24 @@ export default {
 
 <style scoped>
 .legend-container {
-  margin-top: -10px;
-  margin-bottom: 10px;
-  display: flex;
+  margin-top: 35px;
+  margin-left: 10px;
+  /*display: flex;*/
   justify-content: space-between;
 }
 .item-container {
   display: flex;
   flex-direction: column;
-  margin-right:40px;
+  margin-bottom:10px;
+
 }
 .line-container {
   display: flex;
 }
 .dot-container {
+  /*display: flex;*/
+}
+.dot-item-container{
   display: flex;
 }
 .dot {
@@ -95,7 +103,7 @@ export default {
 }
 .label {
   margin: 0 4px;
-  font-size: 10px;
+  font-size: 12px;
 }
 .left-label {
   order: -1;
@@ -106,6 +114,7 @@ export default {
 .bottom-label {
   margin-left: 7px;
   margin-bottom: 0px;
+  font-size: 14px;
   font-weight: bold;
 }
 </style>

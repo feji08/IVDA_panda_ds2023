@@ -3,9 +3,6 @@
     <v-row class="mt-0.5 mb-0 ml-1">
       <h3>Pairwise Correlation Coefficients of Stock Attributes</h3>
     </v-row>
-    <v-row class="mt-0.5 mb-0 ml-1">
-      <LegendForGraph/>
-    </v-row>
     <div class="main-graph-container">
       <div class="network-graph-container">
         <NetWorkGraphDetail :nodes="nodes" :edges="edges" :layouts="layouts"
@@ -13,6 +10,9 @@
                             @updateSelection="handleUpdateSelection"/>
       </div>
       <div class="right-panel">
+        <v-row class="mt-0.5 mb-0 ml-1">
+          <LegendForGraph/>
+        </v-row>
         <div class="network-graph-small">
           <NetWorkGraphSmall :nodes="nodes" :edges="edges" :layouts="layouts"
                              :indicator="$props.selectedIndicator"
@@ -202,8 +202,9 @@ export default {
 
 .network-graph-container {
   position: relative;
-  height: 65vh;
+  height: 67vh;
   width: 75%;
+  margin-top:4%;
   left: 8px;
   bottom: 8px;
   background: #f8f9fa;
@@ -213,7 +214,7 @@ export default {
 
 .right-panel {
   position: relative;
-  height: 65vh;
+  height: 71vh;
   width: 25%;
   margin-left: 0px;
 //background: #fdfdfd;
