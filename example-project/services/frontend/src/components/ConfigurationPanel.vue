@@ -44,25 +44,25 @@
         </v-col>
         <v-col cols="20" md="8">
           <v-row>
-            <v-col cols="12" sm="6">
-              <v-select
-                  :items="indicators.names"
-                  label="Select an indicator"
-                  dense
-                  v-model="indicators.selectedValue"
-                  item-text="names"
-                  @change="changeIndicator"
-              ></v-select>
-            </v-col>
-            <v-col cols="12" sm="6">
-              <v-select
-                  :items="algorithms.names"
-                  label="Select an algorithm"
-                  dense
-                  v-model="algorithms.selectedValue"
-                  item-text="names"
-                  @change="changeAlgorithms"
-              ></v-select>
+            <v-col>
+              <div class="selection-container">
+                <v-select
+                    :items="indicators.names"
+                    label="Select an indicator"
+                    dense
+                    v-model="indicators.selectedValue"
+                    item-text="names"
+                    @change="changeIndicator"
+                ></v-select>
+                <v-select
+                    :items="algorithms.names"
+                    label="Select an algorithm"
+                    dense
+                    v-model="algorithms.selectedValue"
+                    item-text="names"
+                    @change="changeAlgorithms"
+                ></v-select>
+              </div>
             </v-col>
           </v-row>
           <v-row>
@@ -132,6 +132,8 @@ body {
 
 .main-container {
   background-color: #a9c1d6;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .rightBar {
@@ -144,12 +146,75 @@ body {
   background-color: #fdfdfd;
 }
 
+.selection-container{
+  border-radius: 5px;
+  height:100%;
+  max-height: 70px;
+  background-color: #fdfdfd;
+  display: flex;
+}
+
+.selection-container > * {
+  margin: 15px;
+}
+
 .control-panel-font {
   font-size: 14px;
 }
 
 .v-range-slider .v-slider-thumb__label {
   min-width: 60px;
+}
+
+.v-select .v-field.v-field--active.v-field--appended.v-field--center-affix.v-field--dirty.v-field--variant-filled.v-theme--light.v-locale--is-ltr{
+  height:78%;
+  padding-right: 0;
+}
+
+.v-select .v-field__overlay{
+  height:75%;
+  background: #ffffff;
+  border-radius: 3px;
+}
+
+.v-select .v-field__loader,
+.v-select .v-progress-linear{ /*lines under selection box */
+  border: none;
+}
+
+.v-select .v-field__field, /* label and input container */
+.v-select .v-field__append-inner{ /* right button container */
+  height:75%;
+  border: 0.5px solid #000000;
+  background: #fdfdfd;
+  border-radius: 3px;
+  margin: 0;
+  padding: 0;
+}
+
+.v-select .v-field-label{ /* select an algo container */
+  height:50%;
+  position: absolute;
+  margin-top: -5px;
+  margin-left: 10px;
+}
+
+.v-select .v-select__selection{ /* input container */
+  height:75%;
+  width: 200px;
+  border-radius: 3px;
+  margin-top: -4px;
+}
+
+.v-select .v-label,
+.v-select .v-list .v-list-item__title,
+.v-select .v-field-label,
+.v-select .v-field .v-messages{
+  font-size: 10px;
+}
+
+.v-select .v-select__selection-text{
+  font-size: 14px;
 }
 
 </style>
