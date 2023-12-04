@@ -6,14 +6,18 @@
     <v-row class="mt-0.5 mb-0 ml-1">
       <LegendForGraph/>
     </v-row>
-    <div class="network-graph-container">
-      <NetWorkGraphDetail :nodes="nodes" :edges="edges" :layouts="layouts"
-                          :detailViewBox="detailViewBox" :indicator="$props.selectedIndicator"
-                          @updateSelection="handleUpdateSelection"/>
-      <div class="network-graph-small">
-        <NetWorkGraphSmall :nodes="nodes" :edges="edges" :layouts="layouts"
-                           :indicator="$props.selectedIndicator"
-                           @updateViewBox="handleUpdateViewBox"/>
+    <div class="main-graph-container">
+      <div class="network-graph-container">
+        <NetWorkGraphDetail :nodes="nodes" :edges="edges" :layouts="layouts"
+                            :detailViewBox="detailViewBox" :indicator="$props.selectedIndicator"
+                            @updateSelection="handleUpdateSelection"/>
+      </div>
+      <div class="right-panel">
+        <div class="network-graph-small">
+          <NetWorkGraphSmall :nodes="nodes" :edges="edges" :layouts="layouts"
+                             :indicator="$props.selectedIndicator"
+                             @updateViewBox="handleUpdateViewBox"/>
+        </div>
       </div>
     </div>
   </div>
@@ -192,20 +196,37 @@ export default {
 </script>
 
 <style>
+.main-graph-container {
+  display: flex;
+}
+
 .network-graph-container {
   position: relative;
   height: 65vh;
+  width: 75%;
   background: #f8f9fa;
-  //border: 1px solid #adaaaa;
+  //border: 0.5px solid #adaaaa;
+  border-radius: 0 0 0 5px;
+}
+
+.right-panel {
+  position: relative;
+  height: 65vh;
+  width: 25%;
+  margin-left: 0px;
+//background: #fdfdfd;
+//border: 0.5px solid #adaaaa;
+  border-radius: 0 0 5px 0;
 }
 
 .network-graph-small {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  height: 30%;
-  width: 20%;
+  left: 10px;
+  bottom: 10px;
+  right: 10px;
+  height: 35%;
   background: #fdfdfd;
-  border: 2px solid #adaaaa;
+  border: 0.5px solid #E9ECEF;
+  border-radius: 0 0 3px 0;
 }
 </style>

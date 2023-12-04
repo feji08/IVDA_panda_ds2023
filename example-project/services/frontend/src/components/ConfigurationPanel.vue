@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container fluid="">
+    <v-container fluid="" class="main-container">
       <v-row>
         <v-col cols="16" md="4">
           <v-row>
@@ -32,7 +32,8 @@
           </v-row>
           <v-row>
             <!--  传递的数据！！！ -->
-            <RightBar :key="RightBarId"
+            <RightBar class = "rightBar"
+                      :key="RightBarId"
                       :selectedIndicator="indicators.selectedValue"
                       :selectedAlgorithm="algorithms.selectedValue"
                       :formattedTimeRange="formattedTimeRange"
@@ -65,11 +66,13 @@
           </v-row>
           <v-row>
             <v-col>
-              <NetWorkGraphCombo :selectedIndicator="indicators.selectedValue"
-                                 :selectedAlgorithm="algorithms.selectedValue"
-                                 :formattedTimeRange="formattedTimeRange"
-                                 :SelectedCrossfilterDataRange="SelectedCrossfilterDataRange"
-                                 @updateSelection="handleUpdateSelection"/>
+              <NetWorkGraphCombo
+                  class = "graph"
+                  :selectedIndicator="indicators.selectedValue"
+                  :selectedAlgorithm="algorithms.selectedValue"
+                  :formattedTimeRange="formattedTimeRange"
+                  :SelectedCrossfilterDataRange="SelectedCrossfilterDataRange"
+                  @updateSelection="handleUpdateSelection"/>
             </v-col>
           </v-row>
         </v-col>
@@ -122,6 +125,24 @@ export default {
 
 
 <style>
+body {
+  background-color: #a9c1d6;
+}
+
+.main-container {
+  background-color: #a9c1d6;
+}
+
+.rightBar {
+  border-radius: 5px;
+  background-color: #fdfdfd;
+}
+
+.graph {
+  border-radius: 5px;
+  background-color: #fdfdfd;
+}
+
 .control-panel-font {
   font-size: 14px;
 }

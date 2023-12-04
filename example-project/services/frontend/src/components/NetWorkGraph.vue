@@ -22,6 +22,10 @@
       </div>
     </div>
   </div>
+  <div class="control-panel" v-if="!props.overview">
+    <button class="button zoom-in" @click="zoomIn">Zoom In</button>
+    <button class="button zoom-out" @click="zoomOut">Zoom Out</button>
+  </div>
 </template>
 
 <script setup>
@@ -108,8 +112,9 @@ const initialConfigs = vNG.defineConfigs({
       autoPanAndZoomOnLoad: props.overview? "fit-content":false,
       panEnabled: !props.overview,
       zoomEnabled: !props.overview,
-      fitContentMargin: 2,
+      fitContentMargin: 5,
       autoPanOnResize: true,
+      layoutHandler: new vNG.GridLayout({ grid: 15 }),
     },
     grid: {
       visible: !props.overview,
@@ -180,7 +185,7 @@ watch(updateViewBox, (newVal) => {
 });
 
 watch(() => props.viewBox, (newVal) => {
-  const bufferPercentage =0.15;
+  const bufferPercentage =0.05;
   const bufferX = (newVal.right - newVal.left) * bufferPercentage;
   const bufferY = (newVal.bottom - newVal.top) * bufferPercentage;
   const bufferedViewBox = {
@@ -251,9 +256,34 @@ const eventHandlers = {
   },
 };
 
+const zoomIn = () => {
+  if (graph.value) {
+    graph.value.zoomIn();
+  }
+};
+
+const zoomOut = () => {
+  if (graph.value) {
+    graph.value.zoomOut();
+  }
+};
+
 </script>
 
 <style>
+.control-panel {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 12px;
+  display: flex;
+  gap: 10px;
+}
+.button {
+  font-size: 12px;
+  border: 1px solid rgba(134, 134, 246, 0.3);
+  padding: 2px 2px;
+}
 .tooltip-wrapper {
   position: relative;
   width: 100%;
