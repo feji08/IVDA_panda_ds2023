@@ -1,7 +1,10 @@
 <template>
   <div>
-    <v-row class="mt-0.5 mb-0 ml-1">
+    <v-row class="title mt-0.5 mb-0 ml-3">
       <h3>Pairwise Correlation Coefficients of Stock Attributes</h3>
+    </v-row>
+    <v-row class="custom-info mt-0.5 mb-0 ml-3" v-if="showAdditionalText">
+      <p>Network graph updated based on new configurations!</p>
     </v-row>
     <div class="main-graph-container">
       <div class="network-graph-container">
@@ -38,6 +41,7 @@ export default {
       edges:Object,
       layouts:Object,
       selection:[],//name needed instead of id
+      showAdditionalText: false,
     };
   },
   watch: {
@@ -68,6 +72,10 @@ export default {
       const postData = this.requestForLayout();
       console.log("update dataConfigs",postData)
       this.fetchData(postData,"/networkGraph/layout");
+      this.showAdditionalText = true;
+      setTimeout(() => {
+        this.showAdditionalText = false;
+      }, 2000);
     },
     requestForLayout(){
       return {
@@ -200,11 +208,22 @@ export default {
   display: flex;
 }
 
+.title {
+  max-height: 10px;
+}
+
+.custom-info {
+  position:absolute;
+  margin-top: -10px;
+  font-size: 12px;
+  color: #F05D0E;
+}
+
 .network-graph-container {
   position: relative;
   height: 67vh;
   width: 75%;
-  margin-top:4%;
+  margin-top:6%;
   left: 8px;
   bottom: 8px;
   background: #f8f9fa;
