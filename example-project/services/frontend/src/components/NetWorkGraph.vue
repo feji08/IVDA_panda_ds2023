@@ -223,7 +223,6 @@ watch(
     { deep: true }
 );
 
-const edges = ref(props.edges);
 const related_nodes = ref([]);
 const related_coef = ref([]);
 const eventHandlers = {
@@ -233,6 +232,8 @@ const eventHandlers = {
 
     const relatedNodes = [];
     const relatedCoef = [];
+
+    const edges = ref(props.edges);
 
     // Loop through each edge object in edges.value
     for (const key in edges.value) {
