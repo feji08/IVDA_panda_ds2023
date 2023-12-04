@@ -106,7 +106,8 @@ const initialConfigs = vNG.defineConfigs({
         width: (edge) => 3 * edge.width * props.scaleRatio,
         color: (edge) => edge.color,
         dasharray: (edge) => edge.dasharray, // currently not working
-      }
+      },
+      type: "curve",
     },
     view: {
       autoPanAndZoomOnLoad: props.overview? "fit-content":false,

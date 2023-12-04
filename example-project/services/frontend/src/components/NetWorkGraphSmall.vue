@@ -101,7 +101,7 @@ export default {
 
 .draggable-rectangle {
   position: absolute;
-  background: rgba(175, 175, 183, 0.3);
+  background: rgba(192, 214, 223, 0.34);
   cursor: grab;
 }
 </style>

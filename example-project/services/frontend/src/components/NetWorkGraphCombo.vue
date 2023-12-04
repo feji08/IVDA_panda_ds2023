@@ -233,7 +233,7 @@ export default {
 
 .right-panel {
   position: relative;
-  height: 71vh;
+  height: 73vh;
   width: 25%;
   margin-left: 0px;
 //background: #fdfdfd;

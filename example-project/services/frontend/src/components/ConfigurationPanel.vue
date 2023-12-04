@@ -127,11 +127,11 @@ export default {
 
 <style>
 body {
-  background-color: #a9c1d6;
+  background-color: #C0D6DF;
 }
 
 .main-container {
-  background-color: #a9c1d6;
+  background-color: #C0D6DF;
   display: flex;
   flex-wrap: wrap;
 }

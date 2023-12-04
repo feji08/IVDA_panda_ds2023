@@ -67,7 +67,7 @@ export default {
 
 <style scoped>
 .legend-container {
-  margin-top: 35px;
+  margin-top: 50px;
   margin-left: 10px;
   /*display: flex;*/
   justify-content: space-between;
