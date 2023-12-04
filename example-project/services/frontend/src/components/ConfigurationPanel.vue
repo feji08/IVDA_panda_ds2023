@@ -5,7 +5,7 @@
         <v-col cols="16" md="4">
           <v-row>
             <v-col cols="12" sm="12">
-              <div class="control-panel-font">Swipe to select time period</div>
+              <h3 class="control-panel-font">Swipe to select time period</h3>
             </v-col>
           </v-row>
           <v-row>
@@ -27,7 +27,7 @@
           </v-row>
           <v-row>
             <v-col cols="12" sm="12">
-              <div class="control-panel-font">Swipe to cross filter data</div>
+              <h3 class="control-panel-font">Swipe to cross filter data</h3>
             </v-col>
           </v-row>
           <v-row>
@@ -37,6 +37,7 @@
                       :selectedIndicator="indicators.selectedValue"
                       :selectedAlgorithm="algorithms.selectedValue"
                       :formattedTimeRange="formattedTimeRange"
+                      :selectedNodes="selectedNodes"
                       @crossfilterDataChanged="handleCrossfilterDataChange"
             />
           </v-row>
