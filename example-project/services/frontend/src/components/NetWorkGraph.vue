@@ -9,8 +9,16 @@
         class="tooltip"
         :style="{ ...tooltipPos, opacity: tooltipOpacity }"
     >
-      <div>
+      <div>Attribute Name:
         {{ targetNodeId!==""&& props.nodes[targetNodeId].name ? props.nodes[targetNodeId].name : "" }}
+      </div><br>
+      <div v-if="related_nodes.length > 0">
+        <div>Related Attributes:</div>
+        <ul>
+          <li v-for="(node, index) in related_nodes" :key="index">
+            {{ props.nodes[node].name }} - Coef: {{ related_coef[index].toFixed(2) }}
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -206,13 +214,37 @@ watch(
     },
     { deep: true }
 );
+
+const edges = ref(props.edges);
+const related_nodes = ref([]);
+const related_coef = ref([]);
 const eventHandlers = {
   "node:pointerover": function ({ node }) {
     targetNodeId.value = node;
     tooltipOpacity.value = 1; // show
+
+    const relatedNodes = [];
+    const relatedCoef = [];
+
+    // Loop through each edge object in edges.value
+    for (const key in edges.value) {
+      const edge = edges.value[key];
+      if (edge.source === node) {
+        relatedNodes.push(edge.target);
+        relatedCoef.push(edge.width);
+      } else if (edge.target === node) {
+        relatedNodes.push(edge.source);
+        relatedCoef.push(edge.width)
+      }
+    }
+
+    related_nodes.value = relatedNodes;
+    related_coef.value = relatedCoef;
   },
   "node:pointerout": function () {
     tooltipOpacity.value = 0; // hide
+    related_nodes.value = [];
+    related_coef.value = [];
   },
 };
 
@@ -229,8 +261,8 @@ const eventHandlers = {
   left: 0;
   opacity: 0;
   position: absolute;
-  width: 80px;
-  height: 36px;
+  width: 160px;
+  height: 125px;
   display: grid;
   place-content: center;
   text-align: center;
