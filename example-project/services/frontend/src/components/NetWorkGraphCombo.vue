@@ -204,6 +204,8 @@ export default {
   position: relative;
   height: 65vh;
   width: 75%;
+  left: 8px;
+  bottom: 8px;
   background: #f8f9fa;
   //border: 0.5px solid #adaaaa;
   border-radius: 0 0 0 5px;
