@@ -74,7 +74,7 @@ const initialConfigs = vNG.defineConfigs({
         // type: (node) => node.name === 'new_pca_node' ? "rect":"circle",
         strokeColor: (node) => node.name === 'new_pca_node' ? "red":"white",
         strokeWidth: 2,
-        radius: 8 * props.scaleRatio,
+        radius: NODE_RADIUS * props.scaleRatio,
         // borderRadius: 6 * props.scaleRatio,
         // radius: (node) => node.name === "new_pcs_node"? 6 * props.scaleRatio: undefined,
         // width: 6 * props.scaleRatio,
@@ -93,7 +93,7 @@ const initialConfigs = vNG.defineConfigs({
       },
       label: {
         visible: !props.overview,
-        fontSize: 9,
+        fontSize: 12,
         color: (node) => node.name === props.indicator?  "red":"black",
       }
     },
@@ -106,7 +106,10 @@ const initialConfigs = vNG.defineConfigs({
     },
     view: {
       autoPanAndZoomOnLoad: props.overview? "fit-content":false,
-      fitContentMargin: -100,
+      panEnabled: !props.overview,
+      zoomEnabled: !props.overview,
+      fitContentMargin: 2,
+      autoPanOnResize: true,
     },
     grid: {
       visible: !props.overview,

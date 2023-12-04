@@ -27,8 +27,8 @@ export default {
   data() {
     return {
       rectanglePosition: { left: 20, top: 20 },
-      rectangleWidth: 60,
-      rectangleHeight: 40,
+      rectangleWidth: 90,
+      rectangleHeight: 60,
       isDragging: false,
       startX: 0,
       startY: 0,

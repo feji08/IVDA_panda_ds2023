@@ -204,7 +204,7 @@ export default {
   bottom: 0;
   right: 0;
   height: 30%;
-  width: 30%;
+  width: 20%;
   background: #fdfdfd;
   border: 2px solid #adaaaa;
 }

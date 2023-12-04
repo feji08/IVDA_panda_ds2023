@@ -1,22 +1,22 @@
 <template>
   <div class="legend-container">
     <div class="item-container">
+      <div class="label bottom-label">stock attributes:</div>
       <div class="dot-container">
         <div class="dot blue-dot"></div>
         <div class="label dot-label">normal attribute</div>
         <div class="dot red-dot"></div>
         <div class="label dot-label">indicator attribute</div>
       </div>
-      <div class="label bottom-label">stock attributes</div>
     </div>
     <div class="item-container">
+      <div class="label bottom-label">correlation coefficient:</div>
       <div class="line-container">
         <div class="label left-label">-1</div>
         <div v-for="width in [-1,-0.9, -0.8, -0.7, -0.6, -0.5, 0, 0.5, 0.6, 0.7, 0.8, 0.9]"
              :key="width" class="line" :style="getLineStyle(width)"></div>
         <div class="label right-label">1</div>
       </div>
-      <div class="label bottom-label">correlation coefficient</div>
     </div>
   </div>
 </template>
@@ -63,13 +63,14 @@ export default {
 
 <style scoped>
 .legend-container {
+  margin-top: -10px;
+  margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
 }
 .item-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
   margin-right:40px;
 }
 .line-container {
@@ -94,7 +95,7 @@ export default {
 }
 .label {
   margin: 0 4px;
-  font-size: 8px;
+  font-size: 10px;
 }
 .left-label {
   order: -1;
@@ -103,7 +104,8 @@ export default {
   order: 1;
 }
 .bottom-label {
-  margin-top: 4px;
-  font-size: 8px;
+  margin-left: 7px;
+  margin-bottom: 0px;
+  font-weight: bold;
 }
 </style>
