@@ -3,44 +3,44 @@
     <v-container fluid="" class="main-container">
       <v-row>
         <v-col cols="16" md="4">
-          <v-row>
-            <v-col cols="12" sm="12">
-              <h3 class="control-panel-font">Swipe to select time period</h3>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" sm="12">
-              <v-range-slider
-                  v-model="selectedTimeRange"
-                  :min="new Date('2010-01').getTime()"
-                  :max="new Date('2022-12').getTime()"
-                  :step="30 * 24 * 60 * 60 * 1000"
-                  thumb-label="always"
-                  class="my-custom-thumb-label"
-                  @mouseup="handleSliderChange"
-              >
-                <template v-slot:thumb-label="{ modelValue }">
-                  {{ formatTimestamp(modelValue) }}
-                </template>
-              </v-range-slider>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" sm="12">
-              <h3 class="control-panel-font">Swipe to cross filter data</h3>
-            </v-col>
-          </v-row>
-          <v-row>
-            <!--  传递的数据！！！ -->
-            <RightBar class = "rightBar"
-                      :key="RightBarId"
-                      :selectedIndicator="indicators.selectedValue"
-                      :selectedAlgorithm="algorithms.selectedValue"
-                      :formattedTimeRange="formattedTimeRange"
-                      :selectedNodes="selectedNodes"
-                      @crossfilterDataChanged="handleCrossfilterDataChange"
-            />
-          </v-row>
+          <div class="left_panel">
+            <v-row align="center" justify="center" class="mt-0.5 mb-0">
+                <h3 class="control-panel-font">Swipe to Filter Stocks</h3>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="12">
+                <v-range-slider
+                    v-model="selectedTimeRange"
+                    :min="new Date('2010-01').getTime()"
+                    :max="new Date('2022-12').getTime()"
+                    :step="30 * 24 * 60 * 60 * 1000"
+                    thumb-label="always"
+                    class="my-custom-thumb-label"
+                    @mouseup="handleSliderChange"
+                >
+                  <template v-slot:thumb-label="{ modelValue }">
+                    {{ formatTimestamp(modelValue) }}
+                  </template>
+                </v-range-slider>
+              </v-col>
+            </v-row>
+            <!--          <v-row>-->
+            <!--            <v-col cols="12" sm="12">-->
+            <!--              <h3 class="control-panel-font">Swipe to cross filter data</h3>-->
+            <!--            </v-col>-->
+            <!--          </v-row>-->
+            <v-row>
+              <!--  传递的数据！！！ -->
+              <RightBar class = "rightBar"
+                        :key="RightBarId"
+                        :selectedIndicator="indicators.selectedValue"
+                        :selectedAlgorithm="algorithms.selectedValue"
+                        :formattedTimeRange="formattedTimeRange"
+                        :selectedNodes="selectedNodes"
+                        @crossfilterDataChanged="handleCrossfilterDataChange"
+              />
+            </v-row>
+          </div>
         </v-col>
         <v-col cols="20" md="8">
           <v-row>
@@ -136,9 +136,38 @@ body {
   flex-wrap: wrap;
 }
 
-.rightBar {
+.left_panel {
+  margin-top: 12px;
+  min-height: 87vh;
   border-radius: 5px;
   background-color: #fdfdfd;
+}
+
+.control-panel-font {
+  font-size: 14px;
+  margin-top: 6px;
+  max-height: 2px;
+}
+
+.v-range-slider .v-slider-thumb__label {
+  min-width: 60px;
+}
+
+.v-range-slider .v-slider__container {
+  width: 80%;
+  margin-left: 10%;
+}
+
+.v-range-slider .v-slider-track__fill {
+  height: 2px;
+  background-color: #081460;
+}
+
+.v-range-slider .v-slider-thumb__surface {
+  width: 6px;
+  height: 20px;
+  border-radius: 3px;
+  margin-left: 6px;
 }
 
 .graph {
@@ -156,14 +185,6 @@ body {
 
 .selection-container > * {
   margin: 15px;
-}
-
-.control-panel-font {
-  font-size: 14px;
-}
-
-.v-range-slider .v-slider-thumb__label {
-  min-width: 60px;
 }
 
 .v-select .v-field.v-field--active.v-field--appended.v-field--center-affix.v-field--dirty.v-field--variant-filled.v-theme--light.v-locale--is-ltr{
