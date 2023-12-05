@@ -41,7 +41,10 @@ export default {
   watch: {
     selectedIndicator: "fetchDataBarChart",
     selectedAlgorithm: "fetchDataBarChart",
-    formattedTimeRange: "fetchDataBarChart",
+    formattedTimeRange: function() {
+      this.fetchDataBarChart();
+      this.fetchDataHistogram();
+    },
     SelectedCrossfilterDataRange: "fetchDataBarChart",
     selectedNodes: "fetchDataBarChart",
   },
