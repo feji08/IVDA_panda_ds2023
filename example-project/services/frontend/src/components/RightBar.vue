@@ -1,7 +1,7 @@
 <template>
   <v-col cols="12" sm="12">
     <v-row style="height: 15vh;">
-      <v-col cols="12" sm="12" >
+      <v-col cols="12" sm="12">
         <div id='myCrossFilter1' style="height: 15px;"></div>
       </v-col>
     </v-row>
@@ -32,7 +32,7 @@ import * as dc from 'dc';
 
 export default {
   name: "RightBar",
-  props: ["selectedIndicator","selectedAlgorithm","formattedTimeRange","selectedNodes"],
+  props: ["selectedIndicator", "selectedAlgorithm", "formattedTimeRange", "selectedNodes"],
   data: () => ({
     BarChartData: { x: [], y: [] },
     SelectedCrossfilterDataRange: [0, 1, 55279300, 45126800000, -1.2, 1.2],
@@ -43,14 +43,14 @@ export default {
     selectedAlgorithm: "fetchDataBarChart",
     formattedTimeRange: "fetchDataBarChart",
     SelectedCrossfilterDataRange: "fetchDataBarChart",
-    selectedNodes:"fetchDataBarChart",
+    selectedNodes: "fetchDataBarChart",
   },
   mounted() {
     this.fetchDataHistogram();
     this.fetchDataBarChart();
   },
   methods: {
-    requestForCrossfilter(){
+    requestForCrossfilter() {
       return {
         "time": this.$props.formattedTimeRange,
         "attributes": {
@@ -69,7 +69,7 @@ export default {
         }
       };
     },
-    requestForBarChart(){
+    requestForBarChart() {
       return {
         "time": this.$props.formattedTimeRange,
         "attributes": {
@@ -100,7 +100,8 @@ export default {
         const postData = this.requestForCrossfilter();
         const requestOptions = {
           method: 'POST',
-          headers: {'Content-Type': 'application/json', // Specify the content type as JSON
+          headers: {
+            'Content-Type': 'application/json', // Specify the content type as JSON
           },
           body: JSON.stringify(postData), // Convert the postData object to a JSON string
         };
@@ -112,19 +113,19 @@ export default {
         for (var i = 0; i < responseData.assetTurnover.length; i++) {
           // 构建新的对象并添加到 experiments 数组中
           this.CrossFilterData.push({
-            "assetTurnover": responseData.assetTurnover[i],                          // 设置 Expt 属性为 '1'
-            "revenue": responseData.revenue[i],            // 设置 Run 属性为当前索引位置加1并转换为字符串
-            "roe": responseData.roe[i]    // 设置 Speed 属性为 attribute1 数组当前索引位置的值
+            "assetTurnover": responseData.assetTurnover[i],
+            "revenue": responseData.revenue[i],
+            "roe": responseData.roe[i]
           });
 
         }
-        console.log("CrossFilterData " , this.CrossFilterData.slice(0, 10))
+        console.log("CrossFilterData ", this.CrossFilterData.slice(0, 10))
         this.createCrossfilterInstance();
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     },
-    async fetchDataBarChart(){
+    async fetchDataBarChart() {
       try {
         console.log("fetchDataBarChart start:")
 
@@ -140,16 +141,17 @@ export default {
         // });
 
         if (this.$props.selectedNodes[0].trim() === "" || this.$props.selectedNodes[0].trim() === "") {
-          this.BarChartData = { x: ["null","null","null","null"], y: [] }
+          this.BarChartData = { x: ["null", "null", "null", "null"], y: [] }
         }
-        else{
+        else {
           // req URL to retrieve initial cross filter data from backend
           var reqUrl = "http://127.0.0.1:5000/barchart"
           console.log("ReqURL " + reqUrl)
           const postData = this.requestForBarChart();
           const requestOptions = {
             method: 'POST',
-            headers: {'Content-Type': 'application/json', // Specify the content type as JSON
+            headers: {
+              'Content-Type': 'application/json', // Specify the content type as JSON
             },
             body: JSON.stringify(postData), // Convert the postData object to a JSON string
           };
@@ -159,7 +161,7 @@ export default {
           console.log("fetchDataBarChart start:2")
           const responseData = await response.json();
           console.log("fetchDataBarChart start:3")
-          console.log("responseData " , responseData)
+          console.log("responseData ", responseData)
           // for (var i = 0; i < responseData1.y.length; i++) {
           //   this.BarChartData.x[i] = responseData1.x[i];
           // }
@@ -167,7 +169,7 @@ export default {
           this.BarChartData.x[1] = this.$props.selectedNodes[1];
           this.BarChartData.x[2] = this.$props.selectedNodes[0] + "+" + this.$props.selectedNodes[1] + "(selected data)";
           this.BarChartData.x[3] = this.$props.selectedNodes[0] + "+" + this.$props.selectedNodes[1] + "(all data)";
-          console.log("9 " )
+          console.log("9 ")
           // responseData1.y.forEach((value) => {
           //   this.BarChartData.y.push(value);
           // });
@@ -178,11 +180,11 @@ export default {
           console.log("BarChartData ", this.BarChartData)
         }
         this.plotBarChart();
-      }catch (error) {
+      } catch (error) {
         console.error('Error fetching data:', error);
       }
     },
-    createCrossfilterInstance(){
+    createCrossfilterInstance() {
       console.log('111:');
       // var experiments = d3.csvParse(d3.select('pre#data').text());
       // experiments.forEach(function(x) {
@@ -206,98 +208,113 @@ export default {
       console.log('attribute1Dim.top(3):', attribute1Dim.top(3));
 
       // Create groups
-      const attribute1Group = attribute1Dim.group(function(d) { return Math.floor(d / 0.02) * 0.02; });
-      const attribute2Group = attribute2Dim.group(function(d) { return Math.floor(d / 5000000000) * 5000000000; });
-      const attribute3Group = attribute3Dim.group(function(d) { return Math.floor(d / 0.2) * 0.2; });
+      const attribute1Group = attribute1Dim.group(function (d) { return Math.floor(d / 0.02) * 0.02; });
+      const attribute2Group = attribute2Dim.group(function (d) { return Math.floor(d / 5000000000) * 5000000000; });
+      console.log('333:');
+      console.log(attribute2Group)
+      const attribute3Group = attribute3Dim.group(function (d) { return Math.floor(d / 0.02) * 0.02; });
 
-    console.log('333:');
-    var chart1 = new dc.BarChart("#myCrossFilter1");
-    chart1
-        .height(130)
-        .x(d3.scaleLinear().domain([0, 1]))
-        .brushOn(true)
-        .xAxisLabel("Asset Turnover")
-        .dimension(attribute1Dim)
-        .group(attribute1Group)
-        .margins({top: 10, right: 20, bottom: 50, left: 40})  // 设置边距
-        //.elasticX(true)
-        .on('renderlet', function(chart) {
-          chart.selectAll('rect').on("click", function(d) {
-            console.log("click!", d);
+
+      var chart1 = new dc.BarChart("#myCrossFilter1");
+      chart1
+          .height(130)
+          .x(d3.scaleLinear().domain([0, 1]))
+          .brushOn(true)
+          .xAxisLabel("Asset Turnover")
+          .dimension(attribute1Dim)
+          .group(attribute1Group)
+          .margins({ top: 10, right: 20, bottom: 50, left: 40 })  // 设置边距
+          //.elasticX(true)
+          .on('renderlet', function (chart) {
+            chart.selectAll('rect').on("click", function (d) {
+              console.log("click!", d);
+            })
           })
-        })
-        .on('renderlet', (chart) => {
-          let brushBegin = '', brushEnd = '';
-          if(chart.filter()) {
-            brushBegin = chart.filter()[0];
-            brushEnd = chart.filter()[1];
-            console.log("SelectedCrossfilterDataRange",this.SelectedCrossfilterDataRange )
-            this.SelectedCrossfilterDataRange[0] = brushBegin;
-            this.SelectedCrossfilterDataRange[1] = brushEnd;
-            // 触发自定义事件
-            this.$emit('crossfilterDataChanged', this.SelectedCrossfilterDataRange);
-          }
-        });
-    chart1.render();
-    var chart2 = new dc.BarChart("#myCrossFilter2");
-    chart2
-        .height(130)
-        .x(d3.scaleLinear().domain([50000000, 50000000000]).rangeRound([0, 500000000 * 10]))
-        .brushOn(true)
-        .xAxisLabel("Revenue")
-        .dimension(attribute2Dim)
-        .group(attribute2Group)
-        .margins({top: 10, right: 20, bottom: 50, left: 40})  // 设置边距
-        //.elasticX(true)
-        .on('renderlet', function(chart) {
-          chart.selectAll('rect').on("click", function(d) {
-            console.log("click!", d);
-          });
-        })
-        .on('renderlet', (chart) => {
-          let brushBegin = '', brushEnd = '';
-          if(chart.filter()) {
-            brushBegin = chart.filter()[0];
-            brushEnd = chart.filter()[1];
-            console.log("SelectedCrossfilterDataRange",this.SelectedCrossfilterDataRange )
-            this.SelectedCrossfilterDataRange[2] = brushBegin;
-            this.SelectedCrossfilterDataRange[3] = brushEnd;
-            // 触发自定义事件
-            this.$emit('crossfilterDataChanged', this.SelectedCrossfilterDataRange);
-          }
-        });
-
-    chart2.render();
-    var chart3 = new dc.BarChart("#myCrossFilter3");
-    chart3
-        .height(130)
-        .x(d3.scaleLinear().domain([-1.2, 1.2]).rangeRound([0,0.2*24]))
-        .brushOn(true)
-        .xAxisLabel("Roe")
-        .dimension(attribute3Dim)
-        .group(attribute3Group)
-        .margins({top: 10, right: 20, bottom: 50, left: 40})  // 设置边距
-        //.elasticX(true)
-        .on('renderlet', function(chart) {
-          chart.selectAll('rect').on("click", function(d) {
-            console.log("click!", d);
-          });
-
-        })
-        .on('renderlet', (chart) => {
-          let brushBegin = '', brushEnd = '';
-            if(chart.filter()) {
+          .on('renderlet', (chart) => {
+            let brushBegin = '', brushEnd = '';
+            if (chart.filter()) {
               brushBegin = chart.filter()[0];
               brushEnd = chart.filter()[1];
-              console.log("SelectedCrossfilterDataRange",this.SelectedCrossfilterDataRange )
+              console.log("SelectedCrossfilterDataRange", this.SelectedCrossfilterDataRange)
+              this.SelectedCrossfilterDataRange[0] = brushBegin;
+              this.SelectedCrossfilterDataRange[1] = brushEnd;
+              // 触发自定义事件
+              this.$emit('crossfilterDataChanged', this.SelectedCrossfilterDataRange);
+            }
+          })
+          .yAxis().ticks(5);  // 设置y轴刻度数量;
+      chart1.render();
+      var chart2 = new dc.BarChart("#myCrossFilter2");
+      chart2
+          .height(130)
+        .x(d3.scaleLinear().domain([50000000, 50000000000]).rangeRound([0, 500000000 * 10]))
+          .brushOn(true)
+          .xAxisLabel("Revenue($)")
+          .dimension(attribute2Dim)
+          .group(attribute2Group)
+          .margins({ top: 10, right: 20, bottom: 50, left: 40 })  // 设置边距
+          //.elasticX(true)
+          .on('renderlet', function (chart) {
+            chart.selectAll('rect').on("click", function (d) {
+              console.log("click!", d);
+            });
+          })
+          .on('renderlet', (chart) => {
+            let brushBegin = '', brushEnd = '';
+            if (chart.filter()) {
+              brushBegin = chart.filter()[0];
+              brushEnd = chart.filter()[1];
+              console.log("SelectedCrossfilterDataRange", this.SelectedCrossfilterDataRange)
+              this.SelectedCrossfilterDataRange[2] = brushBegin;
+              this.SelectedCrossfilterDataRange[3] = brushEnd;
+              // 触发自定义事件
+              this.$emit('crossfilterDataChanged', this.SelectedCrossfilterDataRange);
+            }
+          })
+          .yAxis().ticks(5);  // 设置y轴刻度数量;
+      // 在图表渲染后执行的自定义操作
+      chart2.on('renderlet', function (chart) {
+        // 选择x轴上的刻度标签
+        chart
+            .selectAll('g.x text')
+            .text(function(d) {
+              return d3.format(".1e")(d);
+            })
+            .attr('transform', 'rotate(-10)') // 旋转刻度标签，这里是逆时针旋转10度
+            .style('text-anchor', 'end'); // 设置旋转后的文本锚点位置，可以根据需要调整
+      });
+      chart2.render();
+      var chart3 = new dc.BarChart("#myCrossFilter3");
+      chart3
+          .height(130)
+          .x(d3.scaleLinear().domain([-0.4, 0.4]).rangeRound([0, 0.2 * 8]))
+          .brushOn(true)
+          .xAxisLabel("Roe")
+          .dimension(attribute3Dim)
+          .group(attribute3Group)
+          .margins({ top: 10, right: 20, bottom: 50, left: 40 })  // 设置边距
+          //.elasticX(true)
+          .on('renderlet', function (chart) {
+            chart.selectAll('rect').on("click", function (d) {
+              console.log("click!", d);
+            });
+
+          })
+          .on('renderlet', (chart) => {
+            let brushBegin = '', brushEnd = '';
+            if (chart.filter()) {
+              brushBegin = chart.filter()[0];
+              brushEnd = chart.filter()[1];
+              console.log("SelectedCrossfilterDataRange", this.SelectedCrossfilterDataRange)
               this.SelectedCrossfilterDataRange[4] = brushBegin;
               this.SelectedCrossfilterDataRange[5] = brushEnd;
               // 触发自定义事件
               this.$emit('crossfilterDataChanged', this.SelectedCrossfilterDataRange);
             }
-        });
-    chart3.render();
-  },
+          })
+          .yAxis().ticks(5);  // 设置y轴刻度数量;
+      chart3.render();
+    },
 
     plotBarChart() {
       const data = [{
@@ -326,4 +343,13 @@ export default {
 </script>
 <style>
 @import "../assets/dc.css";
+#myCrossFilter1 rect.bar {
+  width: 8px; /* 根据需要调整宽度 */
+}
+#myCrossFilter2 rect.bar {
+  width: 40px; /* 根据需要调整宽度 */
+}
+#myCrossFilter3 rect.bar {
+  width: 9px; /* 根据需要调整宽度 */
+}
 </style>
