@@ -1,21 +1,21 @@
 <template>
-  <v-col cols="12" sm="12">
-    <v-row style="height: 15vh;">
+  <v-col class= "barChart-container" cols="12" sm="12">
+    <v-row class= "crossfilter-item-container" style="height: 15vh;">
       <v-col cols="12" sm="12">
         <div id='myCrossFilter1' style="height: 15px;"></div>
       </v-col>
     </v-row>
-    <v-row style="height: 15vh;">
+    <v-row class= "crossfilter-item-container" style="height: 15vh;">
       <v-col cols="12" sm="12">
         <div id='myCrossFilter2'></div>
       </v-col>
     </v-row>
-    <v-row style="height: 15vh;">
+    <v-row class= "crossfilter-item-container" style="height: 15vh;">
       <v-col cols="12" sm="12">
         <div id='myCrossFilter3'></div>
       </v-col>
     </v-row>
-    <v-row style="height: 25vh;">
+    <v-row class= "barChart-item-container" style="height: 25vh;">
       <v-col cols="12" sm="12">
         <div id='myBarChart' style="height: 100%; width: 100%;"></div>
       </v-col>
@@ -203,13 +203,15 @@ export default {
       console.log('222:');
       // Create dimensions
       const attribute1Dim = cf.dimension(d => d.assetTurnover);
-      const attribute2Dim = cf.dimension(d => d.revenue/1000000000); //billion
+      const attribute2Dim = cf.dimension(d => d.revenue);
       const attribute3Dim = cf.dimension(d => d.roe);
       console.log('attribute1Dim.top(3):', attribute1Dim.top(3));
 
+      var scale = 1000000000; //billion
+      var step = 5*scale;
       // Create groups
       const attribute1Group = attribute1Dim.group(function (d) { return Math.floor(d / 0.02) * 0.02; });
-      const attribute2Group = attribute2Dim.group(function (d) { return Math.floor(d / 5) * 5; });
+      const attribute2Group = attribute2Dim.group(function (d) { return Math.floor(d / step) * step; });
       console.log('333:');
       console.log(attribute2Group)
       const attribute3Group = attribute3Dim.group(function (d) { return Math.floor(d / 0.02) * 0.02; });
@@ -217,10 +219,11 @@ export default {
 
       var chart1 = new dc.BarChart("#myCrossFilter1");
       chart1
-          .height(130)
+          .height(100)
           .x(d3.scaleLinear().domain([0, 1]))
           .brushOn(true)
           .xAxisLabel("Asset Turnover")
+          .yAxisLabel("Number of Stocks")
           .dimension(attribute1Dim)
           .group(attribute1Group)
           .margins({ top: 10, right: 20, bottom: 50, left: 40 })  // 设置边距
@@ -246,10 +249,10 @@ export default {
       chart1.render();
       var chart2 = new dc.BarChart("#myCrossFilter2");
       chart2
-          .height(130)
-          .x(d3.scaleLinear().domain([0.05, 50]).rangeRound([0, 0.5 * 10]))
+          .height(100)
+          .x(d3.scaleLinear().domain([0.05*scale, 50*scale]).rangeRound([0, 0.5*scale * 10]))
           .brushOn(true)
-          .xAxisLabel("Revenue(USD in Billion)")
+          .xAxisLabel("Revenue (USD in Billion)")
           .yAxisLabel("Number of Stocks")
           .dimension(attribute2Dim)
           .group(attribute2Group)
@@ -279,7 +282,7 @@ export default {
         chart
             .selectAll('g.x text')
             .text(function(d) {
-              return d3.format(".0f")(d);
+              return d3.format(".1f")(d/scale);
             })
             .attr('transform', 'rotate(0)') // 旋转刻度标签，这里是逆时针旋转10度
             .style('text-anchor', 'end'); // 设置旋转后的文本锚点位置，可以根据需要调整
@@ -287,10 +290,11 @@ export default {
       chart2.render();
       var chart3 = new dc.BarChart("#myCrossFilter3");
       chart3
-          .height(130)
+          .height(100)
           .x(d3.scaleLinear().domain([-0.4, 0.4]).rangeRound([0, 0.2 * 8]))
           .brushOn(true)
           .xAxisLabel("Roe")
+          .yAxisLabel("Number of Stocks")
           .dimension(attribute3Dim)
           .group(attribute3Group)
           .margins({ top: 10, right: 20, bottom: 50, left: 40 })  // 设置边距
@@ -322,13 +326,16 @@ export default {
         type: 'bar',
         x: this.BarChartData.x,
         y: this.BarChartData.y,
+        marker: {
+          color: '#081460', // Set the color of the bars
+        },
       }];
 
       const layout = {
         title: 'Coefficient with ' + this.$props.selectedIndicator,
         xaxis: { title: 'Categories' },
         yaxis: { title: 'Values' },
-        font: { size: 10 },
+        font: { size: 8 },
         margin: {
           t: 30, // 设置上边距
           b: 40, // 设置下边距
@@ -343,14 +350,56 @@ export default {
 };
 </script>
 <style>
-@import "../assets/dc.css";
+#myCrossFilter1 g.axis text,
+#myCrossFilter2 g.axis text,
+#myCrossFilter3 g.axis text {
+  font-size: 8px;
+}
+
+#myCrossFilter1 text.x-axis-label,
+#myCrossFilter2 text.x-axis-label,
+#myCrossFilter3 text.x-axis-label{
+  font-size: 10px;
+  /*position: absolute;
+  margin-top:-10px;*/
+}
+
+#myCrossFilter1 text.y-axis-label,
+#myCrossFilter2 text.y-axis-label,
+#myCrossFilter3 text.y-axis-label{
+  font-size: 9px;
+  position: absolute;
+  margin-left:-10px;
+}
+
+
+
+.barChart-container{
+  margin-top:-10%;
+}
+.crossfilter-item-container,
+.barChart-item-container{
+  width: 90%;
+  height: 80%;
+  margin-left:5%;
+  margin-bottom:2%;
+}
+
+#myCrossFilter1 .chart-body .bar,
+#myCrossFilter2 .chart-body .bar,
+#myCrossFilter3 .chart-body .bar{
+  fill: #081460;
+  stroke: #ffffff;
+}
+
 #myCrossFilter1 rect.bar {
-  width: 8px; /* 根据需要调整宽度 */
+  width: 1.5%; /* 根据需要调整宽度 */
 }
 #myCrossFilter2 rect.bar {
-  width: 40px; /* 根据需要调整宽度 */
+  width: 7.5%; /* 根据需要调整宽度 */
 }
 #myCrossFilter3 rect.bar {
-  width: 9px; /* 根据需要调整宽度 */
+  width: 2%; /* 根据需要调整宽度 */
 }
+
 </style>
