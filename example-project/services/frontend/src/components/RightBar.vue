@@ -203,13 +203,13 @@ export default {
       console.log('222:');
       // Create dimensions
       const attribute1Dim = cf.dimension(d => d.assetTurnover);
-      const attribute2Dim = cf.dimension(d => d.revenue);
+      const attribute2Dim = cf.dimension(d => d.revenue/1000000000); //billion
       const attribute3Dim = cf.dimension(d => d.roe);
       console.log('attribute1Dim.top(3):', attribute1Dim.top(3));
 
       // Create groups
       const attribute1Group = attribute1Dim.group(function (d) { return Math.floor(d / 0.02) * 0.02; });
-      const attribute2Group = attribute2Dim.group(function (d) { return Math.floor(d / 5000000000) * 5000000000; });
+      const attribute2Group = attribute2Dim.group(function (d) { return Math.floor(d / 5) * 5; });
       console.log('333:');
       console.log(attribute2Group)
       const attribute3Group = attribute3Dim.group(function (d) { return Math.floor(d / 0.02) * 0.02; });
@@ -247,9 +247,10 @@ export default {
       var chart2 = new dc.BarChart("#myCrossFilter2");
       chart2
           .height(130)
-        .x(d3.scaleLinear().domain([50000000, 50000000000]).rangeRound([0, 500000000 * 10]))
+          .x(d3.scaleLinear().domain([0.05, 50]).rangeRound([0, 0.5 * 10]))
           .brushOn(true)
-          .xAxisLabel("Revenue($)")
+          .xAxisLabel("Revenue(USD in Billion)")
+          .yAxisLabel("Number of Stocks")
           .dimension(attribute2Dim)
           .group(attribute2Group)
           .margins({ top: 10, right: 20, bottom: 50, left: 40 })  // 设置边距
@@ -278,9 +279,9 @@ export default {
         chart
             .selectAll('g.x text')
             .text(function(d) {
-              return d3.format(".1e")(d);
+              return d3.format(".0f")(d);
             })
-            .attr('transform', 'rotate(-10)') // 旋转刻度标签，这里是逆时针旋转10度
+            .attr('transform', 'rotate(0)') // 旋转刻度标签，这里是逆时针旋转10度
             .style('text-anchor', 'end'); // 设置旋转后的文本锚点位置，可以根据需要调整
       });
       chart2.render();
