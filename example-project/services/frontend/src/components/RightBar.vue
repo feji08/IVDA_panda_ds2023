@@ -226,7 +226,7 @@ export default {
           .x(d3.scaleLinear().domain([0, 1]))
           .brushOn(true)
           .xAxisLabel("Asset Turnover")
-          .yAxisLabel("Number of Stocks")
+          .yAxisLabel("Frequency")
           .dimension(attribute1Dim)
           .group(attribute1Group)
           .margins({ top: 10, right: 20, bottom: 50, left: 40 })  // 设置边距
@@ -256,7 +256,7 @@ export default {
           .x(d3.scaleLinear().domain([0.05*scale, 50*scale]).rangeRound([0, 0.5*scale * 10]))
           .brushOn(true)
           .xAxisLabel("Revenue (USD in Billion)")
-          .yAxisLabel("Number of Stocks")
+          .yAxisLabel("Frequency")
           .dimension(attribute2Dim)
           .group(attribute2Group)
           .margins({ top: 10, right: 20, bottom: 50, left: 40 })  // 设置边距
@@ -297,7 +297,7 @@ export default {
           .x(d3.scaleLinear().domain([-0.4, 0.4]).rangeRound([0, 0.2 * 8]))
           .brushOn(true)
           .xAxisLabel("Roe")
-          .yAxisLabel("Number of Stocks")
+          .yAxisLabel("Frequency")
           .dimension(attribute3Dim)
           .group(attribute3Group)
           .margins({ top: 10, right: 20, bottom: 50, left: 40 })  // 设置边距
