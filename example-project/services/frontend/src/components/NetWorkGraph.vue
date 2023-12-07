@@ -21,6 +21,11 @@
         </ul>
       </div>
     </div>
+    <div ref="tooltip_edges" class="tooltip" :style="{...tooltipPos, opacity: tooltipOpacity_edges}">
+      <div>
+        {{ `${props.edges[targetEdgeId]?.width ?? ""}` }}
+      </div>
+    </div>
   </div>
   <div class="control-panel" v-if="!props.overview">
     <button class="button zoom-in" @click="zoomIn">Zoom In</button>
@@ -35,13 +40,17 @@ import "v-network-graph/lib/style.css";
 import {computed, defineProps, getCurrentInstance, reactive, ref, watch} from "vue";
 
 const graph = ref(null);
+// shared by edges and nodes
 const tooltip = ref(null);
 const layouts = ref(props.layouts);
 const targetNodeId = ref("")
+const targetEdgeId = ref("")
 const tooltipOpacity = ref(0) // 0 or 1
+const tooltipOpacity_edges = ref(0) // 0 or 1
 const tooltipPos = ref({ left: "0px", top: "0px" })
 const instance = getCurrentInstance();
 const NODE_RADIUS = 8;
+const EDGE_MARGIN_TOP = 2;
 
 const targetNodePos = computed(() => {
   const layoutValue = layouts.value;
@@ -49,6 +58,20 @@ const targetNodePos = computed(() => {
     const nodePos = layoutValue.nodes[targetNodeId.value];
     return nodePos || { x: 0, y: 0 };
   } else {
+    return { x: 0, y: 0 };
+  }
+});
+
+const edgeCenterPos = computed( ()=>{
+  const layoutValue = layouts.value;
+  if (layoutValue && layoutValue.edges){
+    const sourceNode = props.edges[targetEdgeId.value].source
+    const targetNode = props.edges[targetEdgeId.value].target
+    return {
+      x: (layouts.value.nodes[sourceNode].x + layouts.value.nodes[targetNode].x) / 2,
+      y: (layouts.value.nodes[sourceNode].y + layouts.value.nodes[targetNode].y) / 2,
+    } || { x: 0, y: 0 }
+  }else {
     return { x: 0, y: 0 };
   }
 });
@@ -224,6 +247,24 @@ watch(
     { deep: true }
 );
 
+// Update `tooltipPos`
+watch(
+    () => [edgeCenterPos.value, tooltipOpacity.value],
+    () => {
+      if (!graph.value || !tooltip.value) return { x: 0, y: 0 }
+      if (!targetEdgeId.value) return { x: 0, y: 0 }
+
+      // translate coordinates: SVG -> DOM
+      const domPoint = graph.value.translateFromSvgToDomCoordinates(edgeCenterPos.value)
+      // calculates top-left position of the tooltip.
+      tooltipPos.value = {
+        left: domPoint.x - tooltip.value.offsetWidth / 2 + "px",
+        top: domPoint.y - EDGE_MARGIN_TOP - tooltip.value.offsetHeight - 10 + "px",
+      }
+    },
+    { deep: true }
+)
+
 const related_nodes = ref([]);
 const related_coef = ref([]);
 const eventHandlers = {
@@ -255,6 +296,16 @@ const eventHandlers = {
     tooltipOpacity.value = 0; // hide
     related_nodes.value = [];
     related_coef.value = [];
+  },
+  "edge:pointerover": ({ edge }) => {
+    targetEdgeId.value = edge;
+    tooltipOpacity_edges.value = 1 // show
+    //const relatedNodes = [];
+    //put
+
+  },
+  "edge:pointerout": () => {
+    tooltipOpacity_edges.value = 0 // hide
   },
 };
 

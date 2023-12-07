@@ -178,7 +178,7 @@ export default {
         Object.keys(responseData.edges).forEach((key) => {
           this.edges[key] = {"source": responseData.edges[key].source,
             "target": responseData.edges[key].target,
-            "width": 0.8,
+            "width": Math.abs(responseData.edges[key].width), // which is used later in the tooltips
             "color": this.mapWidthToColor(responseData.edges[key].width)
           }
         });
