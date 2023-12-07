@@ -163,7 +163,7 @@ def distribute_points_on_circle(radius, num_points, start_angle):
     for i in range(num_points):
         angle = 2 * math.pi * (i / num_points + start_angle)
         x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
+        y = radius * math.sin(angle) * 0.8
         points.append((x, y))
     return points
 
@@ -215,8 +215,13 @@ class NetworkLayout(Resource):
 
         # attribute coordinates for each nodes
         points_radius_0_4 = distribute_points_on_circle(0.4, 6, 0)
-        points_radius_0_8 = distribute_points_on_circle(0.8, G.number_of_nodes()-6, 1.0/24.0)
+        points_radius_0_8 = distribute_points_on_circle(0.8, G.number_of_nodes()-6, 1.0/36.0)
         all_points = points_radius_0_4 + points_radius_0_8
+
+        points_radius_0_3 = distribute_points_on_circle(0.3, 3, 0)
+        points_radius_0_6 = distribute_points_on_circle(0.6, 5, 1.0 / 5.0)
+        points_radius_0_9 = distribute_points_on_circle(0.9, 10, 1.0 / 24.0)
+        all_points = points_radius_0_3 + points_radius_0_6 + points_radius_0_9
 
         nodes = {}
         for i, node in enumerate(G.nodes(), 1):
