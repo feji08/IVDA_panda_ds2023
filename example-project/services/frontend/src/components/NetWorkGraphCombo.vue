@@ -143,8 +143,8 @@ export default {
         0.8: "#0096C7",
         0.7: "#48CAE4",
         0.6: "#ADE8F4",
-        0: "#caf0f8",
-        "-0.6": "#F9BD9D",
+        0: "#d5f1f8",
+        "-0.6": "#f8e1d5",
         "-0.7": "#F8AB81",
         "-0.8": "#F58A51",
         "-0.9": "#F05D0E",
@@ -197,7 +197,7 @@ export default {
         Object.keys(responseData.edges).forEach((key) => {
           this.edges[key] = {"source": responseData.edges[key].source,
             "target": responseData.edges[key].target,
-            "width": Math.abs(responseData.edges[key].width), // which is used later in the tooltips
+            "width": responseData.edges[key].width, // which is used later in the tooltips
             "color": this.mapWidthToColor(responseData.edges[key].width)
           }
         });
