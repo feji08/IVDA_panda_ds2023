@@ -4,16 +4,25 @@
       <v-col cols="12" sm="12">
         <div id='myCrossFilter1' style="height: 15px;"></div>
       </v-col>
+      <button v-if= "SelectedCrossfilterDataRange[0] !== 0 || SelectedCrossfilterDataRange[1] !== 1"
+              class="reset-button"
+              @click="resetCrossfilter(1)">reset</button>
     </v-row>
     <v-row class= "crossfilter-item-container" style="height: 15vh;">
       <v-col cols="12" sm="12">
         <div id='myCrossFilter2'></div>
       </v-col>
+      <button v-if= "SelectedCrossfilterDataRange[2] !== 55279300 || SelectedCrossfilterDataRange[3] !== 45126800000"
+              class="reset-button"
+              @click="resetCrossfilter(2)">reset</button>
     </v-row>
     <v-row class= "crossfilter-item-container" style="height: 15vh;">
       <v-col cols="12" sm="12">
         <div id='myCrossFilter3'></div>
       </v-col>
+      <button v-if= "SelectedCrossfilterDataRange[4] !== -1.2 || SelectedCrossfilterDataRange[5] !== 1.2"
+              class="reset-button"
+              @click="resetCrossfilter(3)">reset</button>
     </v-row>
 <!--    <v-row class= "barChart-item-container" style="height: 25vh;">-->
     <v-row class= "barChart-item-container" v-if="this.selectedNodes[0]!==''" style="height: 25vh;">
@@ -38,6 +47,7 @@ export default {
     BarChartData: { x: [], y: [] },
     SelectedCrossfilterDataRange: [0, 1, 55279300, 45126800000, -1.2, 1.2],
     CrossFilterData: [],
+    charts:[],
   }),
   watch: {
     selectedIndicator: "fetchDataBarChart",
@@ -62,6 +72,16 @@ export default {
     //   this.$emit('crossfilterDataChanged', this.SelectedCrossfilterDataRange);
     // },
     resetCrossfilter(index) {
+      if(this.charts[index-1]){
+        var chart = this.charts[index-1];
+        chart.filter(null);
+        for(let i = 0; i < 3; i++){
+          if(this.charts[i]){
+            chart = this.charts[i];
+            chart.render();
+          }
+        }
+      }
       const indexMappings = {
         1: [0, 1],
         2: [55279300, 45126800000],
@@ -70,7 +90,7 @@ export default {
       const mapping = indexMappings[index];
       if (mapping) {
         const start = (index - 1) * 2;
-        const end = index * 2;
+        const end = index * 2 -1 ;
         this.SelectedCrossfilterDataRange[start] = mapping[0];
         this.SelectedCrossfilterDataRange[end] = mapping[1];
       }
@@ -252,6 +272,7 @@ export default {
 
 
       var chart1 = new dc.BarChart("#myCrossFilter1");
+      this.charts[0] = chart1;
       chart1
           .height(100)
           .x(d3.scaleLinear().domain([0, 1]))
@@ -265,8 +286,7 @@ export default {
           .on('renderlet', (chart) => {
             let brushBegin = '', brushEnd = '';
             console.log("chart.filter()",chart.filter())
-            if (!chart.filter()){this.resetCrossfilter()}
-            else {
+            if (chart.filter()){
               brushBegin = chart.filter()[0];
               brushEnd = chart.filter()[1];
               // console.log("SelectedCrossfilterDataRange", this.SelectedCrossfilterDataRange)
@@ -279,6 +299,7 @@ export default {
           .yAxis().ticks(5);  // 设置y轴刻度数量;
       chart1.render();
       var chart2 = new dc.BarChart("#myCrossFilter2");
+      this.charts[1] = chart2;
       chart2
           .height(100)
           .x(d3.scaleLinear().domain([0.05*scale, 50*scale]).rangeRound([0, 0.5*scale * 10]))
@@ -314,6 +335,7 @@ export default {
           .yAxis().ticks(5);  // 设置y轴刻度数量;
       chart2.render();
       var chart3 = new dc.BarChart("#myCrossFilter3");
+      this.charts[2] = chart3;
       chart3
           .height(100)
           .x(d3.scaleLinear().domain([-0.4, 0.4]).rangeRound([0, 0.2 * 8]))
@@ -408,10 +430,21 @@ export default {
 }
 .crossfilter-item-container,
 .barChart-item-container{
+  position:relative;
   width: 90%;
   height: 80%;
   margin-left:5%;
   margin-bottom:1%;
+}
+
+.reset-button{
+  position:absolute;
+  top:5%;
+  right:5%;
+  font-size: 10px;
+  color: #afa9a9;
+  text-decoration: underline #afa9a9;
+  padding: 10px;
 }
 
 #myCrossFilter1 .chart-body .bar,
