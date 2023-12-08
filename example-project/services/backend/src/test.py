@@ -9,7 +9,7 @@ class TestYourApp(unittest.TestCase):
 
     def test_get_method(self):
         # 模拟发送 Get 请求
-        response = self.app.get('/histogram', json={
+        response = self.app.post('/histogram', json={
             "time": ["2010-01", "2022-10"],
             "attributes": {
                 "attribute1": {
@@ -35,7 +35,7 @@ class TestYourApp(unittest.TestCase):
 
     def test_bar_chart(self):
         # 模拟发送 Get 请求
-        response = self.app.get('/barchart', json={
+        response = self.app.post('/barchart', json={
             "time": ["2010-01", "2022-10"],
             "attributes": {
                 "attribute1": {
@@ -136,6 +136,7 @@ class TestYourApp(unittest.TestCase):
         # 检查其他预期结果
         print(response.get_json())
         print("---------------------")
+
 
 if __name__ == '__main__':
     unittest.main()

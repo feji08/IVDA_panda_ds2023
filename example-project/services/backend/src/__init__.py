@@ -6,10 +6,9 @@ from flask_pymongo import PyMongo
 from pymongo.collection import Collection
 from flask import request
 import pandas as pd
-from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-from statsmodels.tsa.ar_model import AutoReg
+from factor_analyzer import FactorAnalyzer
 import networkx as nx
 from copy import deepcopy
 import math
@@ -22,12 +21,13 @@ cors.init_app(app, resources={r"*": {"origins": "*"}})
 # add your mongodb URI
 app.config["MONGO_URI"] = "mongodb://localhost:27017/stocksdatabase"
 pymongo = PyMongo(app)
-# Get a reference to the stocks collection.
+# Get a reference to the stocks' collection.
 stocks: Collection = pymongo.db.stocks
 api = Api(app)
 app.config["nodes"] = {}
 app.config["edges"] = {}
 app.config["NETWORK_GRAPH"] = nx.Graph()
+
 
 class StocksPrice(Resource):
     def get(self):
@@ -80,37 +80,61 @@ class StocksAttributes(Resource):
         })  # 返回满足条件的三个 attributes 的值，分别作为三个列表组成的 JSON 响应
 
 
-def compute_coefficient(df, indicator, node_1, node_2):
+def compute_coefficient(df, indicator, node_1, node_2, algorithm):
     # dimension reduction
     # PCA for display, indicator ~ node_1, node_2
     df_display = df[[indicator, node_1, node_2]].copy()
     # handling missing value(ignore on purpose) ~ get all rows without NAN
-    print(
-        "The dataset before dropping the rows contains {} data records and {} features.".format(df_display.shape[0],
-                                                                                                df_display.shape[
-                                                                                                    1]))
+    # print(
+    #     "The dataset before dropping the rows contains {} data records and {} features.".format(df_display.shape[0],
+    #                                                                                             df_display.shape[
+    #                                                                                                 1]))
     df_display.dropna(inplace=True)
-    print("The dataset now contains {} data records and {} features.".format(df_display.shape[0],
-                                                                             df_display.shape[1]))
+    # print("The dataset now contains {} data records and {} features.".format(df_display.shape[0],
+    #                                                                          df_display.shape[1]))
     # 1. Standardization
     scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(df_display)
+    x_scaled = scaler.fit_transform(df_display)
     # Convert the standardized data back to a DataFrame
-    df_scaled = pd.DataFrame(X_scaled, columns=df_display.columns)
+    df_scaled = pd.DataFrame(x_scaled, columns=df_display.columns)
     # 2. Dimension reduction
     # Perform PCA with two components
-    pca = PCA(n_components=2)
-    X_pca = pca.fit_transform(df_scaled[[node_1, node_2]])
-    # Create a DataFrame with the new dimensions
-    df_pca = pd.DataFrame(X_pca, columns=['PCA_Component_1', 'PCA_Component_2'])
-    # 3. Correlation compute ? which methods to choose
-    # Calculate correlation coefficients
-    corr_1_2 = df_scaled[indicator].corr(df_scaled[node_1])
-    corr_1_3 = df_scaled[indicator].corr(df_scaled[node_2])
-    # Calculate correlation between the first dimension and the new dimension
-    corr_1_pca = df_scaled[indicator].corr(df_pca['PCA_Component_1'])
-    # Correlation values
-    correlations = [corr_1_2, corr_1_3, corr_1_pca]
+    if algorithm == "PCA":
+        pca = PCA(n_components=2)
+        x_pca = pca.fit_transform(df_scaled[[node_1, node_2]])
+        # Create a DataFrame with the new dimensions
+        df_pca = pd.DataFrame(x_pca, columns=['PCA_Component_1', 'PCA_Component_2'])
+        # 3. Correlation compute ? which methods to choose
+        # Calculate correlation coefficients
+        corr_1_2 = df_scaled[indicator].corr(df_scaled[node_1])
+        corr_1_3 = df_scaled[indicator].corr(df_scaled[node_2])
+        # Calculate correlation between the first dimension and the new dimension
+        corr_1_pca = df_scaled[indicator].corr(df_pca['PCA_Component_1'])
+        # Correlation values
+        correlations = [corr_1_2, corr_1_3, corr_1_pca]
+    else:
+        # Factor Analysis
+        fa = FactorAnalyzer(n_factors=2, rotation=None)
+        fa.fit(df_scaled[[node_1, node_2]])
+
+        # Get factor loadings
+        loadings = fa.loadings_
+
+        # Transform data using Factor Analysis
+        x_fa = fa.transform(df_scaled[[node_1, node_2]])
+
+        # Create DataFrame with new dimensions from Factor Analysis
+        df_fa = pd.DataFrame(x_fa, columns=['Factor_Component_1', 'Factor_Component_2'])
+
+        # Correlation compute for Factor Analysis
+        # Calculate correlation coefficients
+        corr_1_2 = df_scaled[indicator].corr(df_scaled[node_1])
+        corr_1_3 = df_scaled[indicator].corr(df_scaled[node_2])
+        # Calculate correlation between the indicator and the new factor dimensions from Factor Analysis
+        corr_1_fa = df_scaled["price"].corr(df_fa['Factor_Component_1'])
+
+        # Correlation values
+        correlations = [corr_1_2, corr_1_3, corr_1_fa]
 
     return correlations
 
@@ -149,14 +173,15 @@ class StocksCoefficient(Resource):
         indicator = json_data.get("indicator")
         algorithm = json_data.get("algorithm")
 
-        coefficient = compute_coefficient(df, indicator, node_1, node_2)
-        coefficient_all = compute_coefficient(pd.DataFrame(list(stocks.find())), indicator, node_1, node_2)
+        coefficient = compute_coefficient(df, indicator, node_1, node_2, algorithm)
+        coefficient_all = compute_coefficient(pd.DataFrame(list(stocks.find())), indicator, node_1, node_2, algorithm)
 
         coefficients = {
             "values": [coefficient[0], coefficient[1], coefficient[2], coefficient_all[2]]
         }
 
         return jsonify({"coefficients": coefficients})
+
 
 def distribute_points_on_circle(radius, num_points, start_angle):
     points = []
@@ -166,6 +191,7 @@ def distribute_points_on_circle(radius, num_points, start_angle):
         y = radius * math.sin(angle) * 0.8
         points.append((x, y))
     return points
+
 
 class NetworkLayout(Resource):
     def post(self):
@@ -215,7 +241,7 @@ class NetworkLayout(Resource):
 
         # attribute coordinates for each nodes
         points_radius_0_4 = distribute_points_on_circle(0.4, 6, 0)
-        points_radius_0_8 = distribute_points_on_circle(0.8, G.number_of_nodes()-6, 1.0/36.0)
+        points_radius_0_8 = distribute_points_on_circle(0.8, G.number_of_nodes() - 6, 1.0 / 36.0)
         all_points = points_radius_0_4 + points_radius_0_8
 
         points_radius_0_3 = distribute_points_on_circle(0.3, 3, 0)
@@ -225,11 +251,11 @@ class NetworkLayout(Resource):
 
         nodes = {}
         for i, node in enumerate(G.nodes(), 1):
-            point = all_points[i-1]
-            x,y = point
+            point = all_points[i - 1]
+            x, y = point
             nodes[f"node{i}"] = {"name": node, "x": x, "y": y}
 
-        edges= {}
+        edges = {}
         for i, edge in enumerate(G.edges(data=True), 1):
             source_key = [key for key, value in nodes.items() if value["name"] == edge[0]][0]
             target_key = [key for key, value in nodes.items() if value["name"] == edge[1]][0]
@@ -247,8 +273,10 @@ class NetworkLayout(Resource):
             "edges": edges
         })
 
+
 def calculate_middle_point(pos1, pos2):
     return [(pos1[0] + pos2[0]) / 2, (pos1[1] + pos2[1]) / 2]
+
 
 def adjust_position(pos, existing_positions, delta=0.1):
     adjusted_pos = pos[:]
@@ -256,6 +284,7 @@ def adjust_position(pos, existing_positions, delta=0.1):
         adjusted_pos[0] += delta
         adjusted_pos[1] += delta
     return adjusted_pos
+
 
 class NetworkAddNode(Resource):
     def post(self):
@@ -282,7 +311,7 @@ class NetworkAddNode(Resource):
         query = {"$and": [date_query] + attribute_queries}
         result = list(stocks.find(query))
         df = pd.DataFrame(result)
-        coefficient = compute_coefficient(df, indicator, node_1, node_2)
+        coefficient = compute_coefficient(df, indicator, node_1, node_2, algorithm)
         print("coefficient:", coefficient)
 
         nodes = app.config["nodes"]
@@ -327,6 +356,7 @@ class NetworkAddNode(Resource):
             "nodes": nodes,
             "edges": edges
         })
+
 
 api.add_resource(StocksPrice, '/companies')
 api.add_resource(StocksAttributes, '/histogram')
