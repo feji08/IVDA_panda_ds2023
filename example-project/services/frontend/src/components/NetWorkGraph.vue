@@ -99,7 +99,7 @@ const initialConfigs = vNG.defineConfigs({
       draggable: false,
       normal: {
         // type: (node) => node.name === 'new_pca_node' ? "rect":"circle",
-        strokeColor: (node) => node.name === 'new_pca_node' ? "red":"white",
+        strokeColor: (node) => node.name === 'new_pca_node' || node.name === 'new_factor_node' ? "red":"white",
         strokeWidth: 2,
         radius: NODE_RADIUS * props.scaleRatio,
         // borderRadius: 6 * props.scaleRatio,
@@ -130,7 +130,7 @@ const initialConfigs = vNG.defineConfigs({
         color: (edge) => edge.color,
         dasharray: (edge) => edge.dasharray, // currently not working
       },
-      type: "curve",
+      // type: "curve",
     },
     view: {
       autoPanAndZoomOnLoad: props.overview? "fit-content":false,

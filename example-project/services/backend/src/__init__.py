@@ -12,6 +12,7 @@ from factor_analyzer import FactorAnalyzer
 import networkx as nx
 from copy import deepcopy
 import math
+from threading import Lock
 
 # Configure Flask & Flask-PyMongo:
 app = Flask(__name__)
@@ -34,7 +35,7 @@ class StocksPrice(Resource):
         # 查询 price 在 1 到 20 之间的数据，并只返回 price 字段的列表
         query = {'$and': [{'date': {'$in': [datetime(2010, 1, 1, 0, 0), datetime(2022, 10, 1, 0, 0)]}}]}
         result = list(stocks.find(query))  # 执行查询并指定返回的字段
-        print(len(result))
+        # print(len(result))
         # 从结果中提取 price 字段的值组成列表
         prices = [item['date'] for item in result]
 
@@ -265,8 +266,8 @@ class NetworkLayout(Resource):
         app.config["edges"] = deepcopy(edges)
         app.config["NETWORK_GRAPH"] = deepcopy(G)
 
-        print("Nodes List:", app.config["nodes"])
-        print("Edges List:", app.config["edges"])
+        # print("Nodes List:", app.config["nodes"])
+        # print("Edges List:", app.config["edges"])
 
         return jsonify({
             "nodes": nodes,
@@ -312,18 +313,30 @@ class NetworkAddNode(Resource):
         result = list(stocks.find(query))
         df = pd.DataFrame(result)
         coefficient = compute_coefficient(df, indicator, node_1, node_2, algorithm)
-        print("coefficient:", coefficient)
+        # print("coefficient:", coefficient)
 
         nodes = app.config["nodes"]
         edges = app.config["edges"]
         G = app.config["NETWORK_GRAPH"]
 
+        lock = Lock()
+        with lock:
+            # Remove node if it exists
+            if any(node["name"] in ["new_pca_node","new_factor_node"] for node in nodes.values()):
+                # Find node key
+                node_key = [key for key, value in nodes.items() if value["name"] in ["new_pca_node","new_factor_node"]][0]
+                # Find edges associated with the removed node and delete them
+                edge_keys = [key for key, edge in edges.items() if node_key in (edge["source"], edge["target"])]
+                for key in edge_keys:
+                    del edges[key]
+                del nodes[node_key]
+
         num_nodes = G.number_of_nodes()
         num_edges = G.number_of_edges()
         print("Original Node List:", nodes)
-        print("Original Edge List:", edges)
-        print("original number of nodes: ", num_nodes)
-        print("original number of edges: ", num_edges)
+        # print("Original Edge List:", edges)
+        # print("original number of nodes: ", num_nodes)
+        # print("original number of edges: ", num_edges)
 
         G.add_node('new_node')
         node1_pos = next(({"x": v["x"], "y": v["y"]} for k, v in nodes.items() if v["name"] == node_1), None)
@@ -333,7 +346,10 @@ class NetworkAddNode(Resource):
             middle_pos = calculate_middle_point([node1_pos["x"], node1_pos["y"]], [node2_pos["x"], node2_pos["y"]])
             all_positions = [[v["x"], v["y"]] for v in nodes.values()]
             adjusted_middle_pos = adjust_position(middle_pos, all_positions)
-            new_node_name = "new_pca_node"
+            if algorithm=="PCA":
+                new_node_name = "new_pca_node"
+            else:
+                new_node_name = "new_factor_node"
             new_node_key = f"node{num_nodes + 1}"
             nodes[new_node_key] = {"name": new_node_name, "x": adjusted_middle_pos[0], "y": adjusted_middle_pos[1]}
             node_1_key = [key for key, value in nodes.items() if value["name"] == node_1][0]
@@ -350,7 +366,7 @@ class NetworkAddNode(Resource):
             print("'node_1' or 'node2' are not found")
 
         print("New Node List:", nodes)
-        print("New Edge List:", edges)
+        # print("New Edge List:", edges)
 
         return jsonify({
             "nodes": nodes,

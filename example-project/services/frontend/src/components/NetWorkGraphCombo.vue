@@ -84,7 +84,7 @@ export default {
     },
     updateAlgo() {
       const postData = this.requestForNewNode();
-      console.log("update algo",postData)
+      // console.log("update algo",postData)
       this.fetchData(postData,"/networkGraph/newNode");
     },
     requestForLayout(){
