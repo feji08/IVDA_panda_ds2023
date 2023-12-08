@@ -256,8 +256,8 @@ export default {
           .height(100)
           .x(d3.scaleLinear().domain([0, 1]))
           .brushOn(true)
-          .xAxisLabel("Asset Turnover")
-          .yAxisLabel("Frequency")
+          .xAxisLabel("Frequency by Asset Turnover")
+          // .yAxisLabel("Frequency")
           .dimension(attribute1Dim)
           .group(attribute1Group)
           .margins({ top: 10, right: 20, bottom: 50, left: 40 })  // 设置边距
@@ -283,8 +283,8 @@ export default {
           .height(100)
           .x(d3.scaleLinear().domain([0.05*scale, 50*scale]).rangeRound([0, 0.5*scale * 10]))
           .brushOn(true)
-          .xAxisLabel("Revenue (USD in Billion)")
-          .yAxisLabel("Frequency")
+          .xAxisLabel("Frequency by Revenue (USD in Billion)")
+          // .yAxisLabel("Frequency")
           .dimension(attribute2Dim)
           .group(attribute2Group)
           .margins({ top: 10, right: 20, bottom: 50, left: 40 })  // 设置边距
@@ -295,6 +295,11 @@ export default {
             });
           })
           .on('renderlet', (chart) => {
+            chart
+              .selectAll('g.x text')
+              .text(function(d) {
+                return d3.format(".1f")(d/scale);
+              })
             let brushBegin = '', brushEnd = '';
             if (chart.filter()) {
               brushBegin = chart.filter()[0];
@@ -307,25 +312,14 @@ export default {
             }
           })
           .yAxis().ticks(5);  // 设置y轴刻度数量;
-      // 在图表渲染后执行的自定义操作
-      chart2.on('renderlet', function (chart) {
-        // 选择x轴上的刻度标签
-        chart
-            .selectAll('g.x text')
-            .text(function(d) {
-              return d3.format(".1f")(d/scale);
-            })
-            .attr('transform', 'rotate(0)') // 旋转刻度标签，这里是逆时针旋转10度
-            .style('text-anchor', 'end'); // 设置旋转后的文本锚点位置，可以根据需要调整
-      });
       chart2.render();
       var chart3 = new dc.BarChart("#myCrossFilter3");
       chart3
           .height(100)
           .x(d3.scaleLinear().domain([-0.4, 0.4]).rangeRound([0, 0.2 * 8]))
           .brushOn(true)
-          .xAxisLabel("Roe")
-          .yAxisLabel("Frequency")
+          .xAxisLabel("Frequency by  Roe")
+          // .yAxisLabel("Frequency")
           .dimension(attribute3Dim)
           .group(attribute3Group)
           .margins({ top: 10, right: 20, bottom: 50, left: 40 })  // 设置边距
