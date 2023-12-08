@@ -192,8 +192,14 @@ export default {
           // for (var i = 0; i < responseData1.y.length; i++) {
           //   this.BarChartData.x[i] = responseData1.x[i];
           // }
-          this.BarChartData.x[0] = this.$props.selectedNodes[0];
-          this.BarChartData.x[1] = this.$props.selectedNodes[1];
+          const nameMap = {
+            "researchAndDdevelopementToRevenue": "R&D to Rev",
+            "researchAndDevelopmentExpenses": "R&D Expenses",
+            // "cashFlowToDebtRatio": "CFDR",
+            "operatingCashFlowPerShare": "OCFPS",
+          };
+          this.BarChartData.x[0] = nameMap[this.$props.selectedNodes[0]]||this.$props.selectedNodes[0];
+          this.BarChartData.x[1] = nameMap[this.$props.selectedNodes[1]]||this.$props.selectedNodes[1];
           this.BarChartData.x[2] = this.$props.selectedAlgorithm==="PCA"?"PCA":"factor";
           // this.BarChartData.x[2] = this.$props.selectedNodes[0] + "+" + this.$props.selectedNodes[1] + "(selected data)";
           // this.BarChartData.x[3] = this.$props.selectedNodes[0] + "+" + this.$props.selectedNodes[1] + "(all data)";
