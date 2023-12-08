@@ -3,27 +3,28 @@
     <v-network-graph v-model:selected-nodes="selectedNodes"
                    :nodes="$props.nodes" :edges="$props.edges" :layouts="$props.layouts"
                    :configs="configs" ref="graph"
-                   :event-handlers="eventHandlers"/>
+                   :event-handlers="eventHandlers"
+                   @mousemove="handleMouseMove"/>
     <div
         ref="tooltip"
         class="tooltip"
         :style="{ ...tooltipPos, opacity: tooltipOpacity }"
     >
-      <div>Attribute Name:
-        {{ targetNodeId!==""&& props.nodes[targetNodeId].name ? props.nodes[targetNodeId].name : "" }}
+      <div>{{ targetNodeId !== "" && props.nodes[targetNodeId].name ? reverseShortName(props.nodes[targetNodeId].name) : "" }}
       </div><br>
       <div v-if="related_nodes.length > 0">
-        <div>Related Attributes:</div>
+<!--        <div>Related Attributes:</div>-->
         <ul>
-          <li v-for="(node, index) in related_nodes" :key="index">
-            {{ props.nodes[node].name }} - Coef: {{ related_coef[index].toFixed(2) }}
+          <li v-for="(node, index) in related_nodes" :key="index"
+              style="list-style-type: none; margin: 0; padding: 0;text-align: left;">
+            Coef - {{ props.nodes[node].name }}: {{ related_coef[index].toFixed(2) }}
           </li>
         </ul>
       </div>
     </div>
-    <div ref="tooltip_edges" class="tooltip" :style="{...tooltipPos, opacity: tooltipOpacity_edges}">
+    <div ref="tooltip_edges" class="tooltip" :style="{...tooltipPos_edges, opacity: tooltipOpacity_edges}">
       <div>
-        {{ `${props.edges[targetEdgeId]?.width ?? ""}` }}
+        {{ `${props.edges[targetEdgeId]?.width.toFixed(2) ?? ""}` }}
       </div>
     </div>
   </div>
@@ -42,15 +43,17 @@ import {computed, defineProps, getCurrentInstance, reactive, ref, watch} from "v
 const graph = ref(null);
 // shared by edges and nodes
 const tooltip = ref(null);
+// const tooltip_edge = ref(null);
 const layouts = ref(props.layouts);
 const targetNodeId = ref("")
 const targetEdgeId = ref("")
 const tooltipOpacity = ref(0) // 0 or 1
 const tooltipOpacity_edges = ref(0) // 0 or 1
 const tooltipPos = ref({ left: "0px", top: "0px" })
+const tooltipPos_edges = ref({ left: "0px", top: "0px" })
 const instance = getCurrentInstance();
 const NODE_RADIUS = 8;
-const EDGE_MARGIN_TOP = 2;
+// const EDGE_MARGIN_TOP = 2;
 
 const targetNodePos = computed(() => {
   const layoutValue = layouts.value;
@@ -62,19 +65,28 @@ const targetNodePos = computed(() => {
   }
 });
 
-const edgeCenterPos = computed( ()=>{
-  const layoutValue = layouts.value;
-  if (layoutValue && layoutValue.edges){
-    const sourceNode = props.edges[targetEdgeId.value].source
-    const targetNode = props.edges[targetEdgeId.value].target
-    return {
-      x: (layouts.value.nodes[sourceNode].x + layouts.value.nodes[targetNode].x) / 2,
-      y: (layouts.value.nodes[sourceNode].y + layouts.value.nodes[targetNode].y) / 2,
-    } || { x: 0, y: 0 }
-  }else {
-    return { x: 0, y: 0 };
-  }
-});
+const reverseShortName = (shortName) => {
+  const nameMap = {
+    "R&D to Rev": "researchAndDdevelopementToRevenue",
+    "R&D Expenses": "researchAndDevelopmentExpenses",
+    // "CFDR": "cashFlowToDebtRatio",
+    "OCFPS": "operatingCashFlowPerShare",
+  };
+  return nameMap[shortName] || shortName;
+}
+
+// const edgeCenterPos = ref({ x: 40, y: 0 });
+const handleMouseMove = (event) => {
+  // edgeCenterPos.value = {
+  //   x: event.clientX,
+  //   y: event.clientY,
+  // };
+  tooltipPos_edges.value = {
+    left: event.clientX -420 + "px",
+    top: event.clientY -230 + "px",
+  };
+  // console.log("edgeCenterPos",edgeCenterPos) //updated right
+};
 
 const props = defineProps({
   overview: Boolean,
@@ -250,22 +262,19 @@ watch(
 );
 
 // Update `tooltipPos`
-watch(
-    () => [edgeCenterPos.value, tooltipOpacity.value],
-    () => {
-      if (!graph.value || !tooltip.value) return { x: 0, y: 0 }
-      if (!targetEdgeId.value) return { x: 0, y: 0 }
-
-      // translate coordinates: SVG -> DOM
-      const domPoint = graph.value.translateFromSvgToDomCoordinates(edgeCenterPos.value)
-      // calculates top-left position of the tooltip.
-      tooltipPos.value = {
-        left: domPoint.x - tooltip.value.offsetWidth / 2 + "px",
-        top: domPoint.y - EDGE_MARGIN_TOP - tooltip.value.offsetHeight - 10 + "px",
-      }
-    },
-    { deep: true }
-)
+// watch(
+//     () => [edgeCenterPos.value, tooltipOpacity.value],
+//     () => {
+//       // dom coord
+//       const domPoint = edgeCenterPos.value;
+//       // calculates top-left position of the tooltip.
+//       tooltipPos_edges.value = {
+//         left: domPoint.x - 30  + "px",
+//         top: domPoint.y - 20 + "px",
+//       };
+//     },
+//     { deep: true }
+// )
 
 const related_nodes = ref([]);
 const related_coef = ref([]);
@@ -349,14 +358,14 @@ const zoomOut = () => {
   left: 0;
   opacity: 0;
   position: absolute;
-  width: 160px;
-  height: 125px;
+  width: auto;
+  height: auto;
   display: grid;
   place-content: center;
   text-align: center;
   font-size: 12px;
-  background-color: #fff0bd;
-  border: 1px solid #ffb950;
+  background-color: #f6f5f2;
+  border: 0.5px solid #000000;
   box-shadow: 2px 2px 2px #aaa;
   transition: opacity 0.2s linear;
   pointer-events: none;
