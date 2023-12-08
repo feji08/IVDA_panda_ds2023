@@ -94,7 +94,7 @@ export default {
       selectedValue: 'revenue',
     },
     algorithms: {
-      names: ['PCA', 'K-Means'],
+      names: ['PCA', 'Factor Analysis'],
       selectedValue: 'PCA',
     },
     //这是传递的数据
