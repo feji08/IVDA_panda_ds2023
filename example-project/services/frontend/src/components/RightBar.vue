@@ -96,6 +96,7 @@ export default {
     },
     async fetchDataHistogram() {
       try {
+        this.CrossFilterData = []
         console.log("fetchDataHistogram start:")
         // req URL to retrieve initial cross filter data from backend
         var reqUrl = "http://127.0.0.1:5000/histogram"
