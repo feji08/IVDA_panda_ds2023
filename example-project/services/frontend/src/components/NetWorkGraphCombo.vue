@@ -235,7 +235,8 @@ export default {
   position:absolute;
   margin-top: -10px;
   font-size: 12px;
-  color: #F05D0E;
+  background-color: #d5f1f8;
+  color: #660708;
 }
 
 .network-graph-container {

@@ -346,6 +346,7 @@ const zoomOut = () => {
 .button {
   font-size: 12px;
   border: 1px solid rgba(134, 134, 246, 0.3);
+  background-color: #fdfdfd;
   padding: 2px 2px;
 }
 .tooltip-wrapper {

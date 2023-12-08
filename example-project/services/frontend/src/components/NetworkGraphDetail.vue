@@ -109,7 +109,8 @@ export default {
 
 .instruction {
   font-size: 11px;
-  color: #333; /* Set text color */
+  color: #660708; /* Set text color */
+  background-color: #d5f1f8;
   position: absolute;
   bottom: 25px; /* Adjust the top position to create space above buttons */
   left: 0;
@@ -118,13 +119,14 @@ export default {
 .grouping-button,
 .confirming-button {
   font-size: 12px;
+  background-color: #fdfdfd;
   border: 1px solid rgba(134, 134, 246, 0.3);
   padding: 2px 2px;
 }
 
 .grouping-button:hover,
 .confirming-button:hover {
-  background-color: rgba(134, 134, 246, 0.3);
+  background-color: #d5f1f8;
 }
 
 /* hover to show test */
