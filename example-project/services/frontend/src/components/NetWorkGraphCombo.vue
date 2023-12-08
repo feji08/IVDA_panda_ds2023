@@ -46,7 +46,7 @@ export default {
   },
   watch: {
     selectedIndicator: "updateDataConfigs",
-    selectedAlgorithm: "updateDataConfigs",
+    selectedAlgorithm: "updateAlgo",
     formattedTimeRange: "updateDataConfigs",
     SelectedCrossfilterDataRange: {
       handler: "updateDataConfigs",
@@ -81,6 +81,11 @@ export default {
       setTimeout(() => {
         this.showAdditionalText = false;
       }, 2000);
+    },
+    updateAlgo() {
+      const postData = this.requestForNewNode();
+      console.log("update algo",postData)
+      this.fetchData(postData,"/networkGraph/newNode");
     },
     requestForLayout(){
       return {
