@@ -131,7 +131,7 @@ def compute_coefficient(df, indicator, node_1, node_2, algorithm):
         corr_1_2 = df_scaled[indicator].corr(df_scaled[node_1])
         corr_1_3 = df_scaled[indicator].corr(df_scaled[node_2])
         # Calculate correlation between the indicator and the new factor dimensions from Factor Analysis
-        corr_1_fa = df_scaled["price"].corr(df_fa['Factor_Component_1'])
+        corr_1_fa = df_scaled[indicator].corr(df_fa['Factor_Component_1'])
 
         # Correlation values
         correlations = [corr_1_2, corr_1_3, corr_1_fa]
