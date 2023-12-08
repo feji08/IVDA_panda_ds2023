@@ -77,7 +77,7 @@ export default {
       this.isDragging = false;
     },
     handleUpdateFocus(focus){
-      console.log(focus)
+      // console.log(focus)
       this.rectanglePosition.left = focus.x-this.rectangleWidth/2;
       this.rectanglePosition.top = focus.y-this.rectangleHeight/2;
       this.rectangle = {

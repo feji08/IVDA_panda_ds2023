@@ -185,9 +185,9 @@ const updateFocus = computed(() => {
 // });
 watch(updateFocus,(newVal)=>{
   if (props.overview && newVal !== null){
-    console.log("new focus computed: ",newVal)
+    // console.log("new focus computed: ",newVal)
     const focus_svg = {x:newVal.x,y:newVal.y};
-    console.log("focus_svg: ",focus_svg);
+    // console.log("focus_svg: ",focus_svg);
     //get focus and calculate newViewBox
     // let box = graph.value?.getViewBox();
     // const boxWidth = box.bottom-box.top;
@@ -197,7 +197,7 @@ watch(updateFocus,(newVal)=>{
     // graph.value?.setViewBox(newBox);
     // graph.value?.panTo(focus_svg);
     const focus_dom = graph.value.translateFromSvgToDomCoordinates(focus_svg);
-    console.log("focus_dom: ",focus_dom)
+    // console.log("focus_dom: ",focus_dom)
     instance.emit('update-focus', focus_dom);
   }
 })
