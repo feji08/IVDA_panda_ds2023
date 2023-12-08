@@ -61,7 +61,7 @@ export default {
     handleUpdateSelection(selection){
       //After grouping this can be handled
       Object.keys(selection).forEach((key) => {
-        this.selection.push(this.nodes[selection[key]].name)
+        this.selection.push(this.reverseShortName(this.nodes[selection[key]].name))
       });
       console.log(this.selection)
       this.$emit('updateSelection', this.selection);
@@ -117,6 +117,15 @@ export default {
         "indicator": this.$props.selectedIndicator,
         "algorithm": this.$props.selectedAlgorithm
       };
+    },
+    reverseShortName(shortName){
+      const nameMap = {
+        "R&D to Rev": "researchAndDdevelopementToRevenue",
+        "R&D Expenses": "researchAndDevelopmentExpenses",
+        // "CFDR": "cashFlowToDebtRatio",
+        "OCFPS": "operatingCashFlowPerShare",
+      };
+      return nameMap[shortName] || shortName;
     },
     mapWidthToColor(width) {
       const colorMap = {
