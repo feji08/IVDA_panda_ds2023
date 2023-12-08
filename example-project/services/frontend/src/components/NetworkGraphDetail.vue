@@ -53,6 +53,18 @@ export default {
       showGroupInstruction: false
     };
   },
+  watch: {
+    selectedNodes: {
+      handler(newVal) {
+        if (newVal.length === 0) {
+          this.$emit('updateSelection', newVal); // handle cancel selection
+          // console.log("detail updateSelection", newVal); // updated right
+        }
+      },
+      deep: true,
+    },
+  },
+
   methods: {
     startSelection() {
       this.showInstruction = true;
@@ -63,6 +75,7 @@ export default {
       this.selectable = false;
       if (this.selectedNodes.length === 2) {
         this.$emit('updateSelection', this.selectedNodes);
+        // console.log("detail updateSelection",this.selectedNodes) //updated right
       }
     },
     handleUpdateSelection(newSelection) {

@@ -59,14 +59,19 @@ export default {
       this.detailViewBox=newViewBox;
     },
     handleUpdateSelection(selection){
-      //After grouping this can be handled
-      Object.keys(selection).forEach((key) => {
-        this.selection.push(this.reverseShortName(this.nodes[selection[key]].name))
-      });
-      console.log(this.selection)
-      this.$emit('updateSelection', this.selection);
-      const postData = this.requestForNewNode();
-      this.fetchData(postData,"/networkGraph/newNode");
+      //After grouping or cleaning this can be handled
+      if(selection.length!==0){
+        this.selection = []
+        Object.keys(selection).forEach((key) => {
+          this.selection.push(this.reverseShortName(this.nodes[selection[key]].name))
+        });
+        console.log("combo updateSelection",this.selection)
+        this.$emit('updateSelection', this.selection);
+        const postData = this.requestForNewNode();
+        this.fetchData(postData,"/networkGraph/newNode");
+      } else {
+        console.log("combo updateSelection",["",""])
+        this.$emit('updateSelection', ["",""]);}
     },
     updateDataConfigs() {
       const postData = this.requestForLayout();

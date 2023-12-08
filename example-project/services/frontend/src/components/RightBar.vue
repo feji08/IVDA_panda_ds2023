@@ -47,7 +47,10 @@ export default {
       this.fetchDataHistogram();
     },
     SelectedCrossfilterDataRange: "fetchDataBarChart",
-    selectedNodes: "fetchDataBarChart",
+    selectedNodes: {
+      handler: "fetchDataBarChart",
+      deep: true,
+    },
   },
   mounted() {
     this.fetchDataHistogram();

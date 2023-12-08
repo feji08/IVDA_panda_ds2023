@@ -223,8 +223,10 @@ watch(() => props.viewBox, (newVal) => {
 });
 
 watch(selectedNodes, (newVal) => {
-  instance.emit('update-selection', newVal);
-});
+  // console.log("update-selection",newVal)
+    instance.emit('update-selection', newVal);
+},
+{ deep: true });
 
 watch(() => props.selectable, (newVal) =>{
     configs.node.selectable = newVal? 2:false;
