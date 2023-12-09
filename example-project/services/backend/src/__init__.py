@@ -216,8 +216,8 @@ class NetworkLayout(Resource):
         df = pd.DataFrame(result)
         df = df[['price', 'revenue', 'netIncome', 'researchAndDdevelopementToRevenue', 'researchAndDevelopmentExpenses',
                  'assetTurnover', 'eps', 'grahamNumber', 'grossProfit', 'grossProfitMargin', 'interestCoverage',
-                 'cashFlowToDebtRatio', 'operatingIncome', 'bookValuePerShare', 'operatingCashFlowPerShare',
-                 'tangibleAssetValue', 'workingCapital', 'priceToSalesRatio']]
+                 'cashFlowToDebtRatio', 'operatingIncome', 'workingCapital', 'operatingCashFlowPerShare',
+                 'tangibleAssetValue', 'bookValuePerShare', 'priceToSalesRatio']]
 
         for col in df.columns:
             df[col] = pd.to_numeric(df[col], errors='coerce')
@@ -240,14 +240,9 @@ class NetworkLayout(Resource):
                 if abs(corr_matrix.iloc[i, j]) > threshold:
                     G.add_edge(corr_matrix.columns[i], corr_matrix.columns[j], weight=corr_matrix.iloc[i, j])
 
-        # attribute coordinates for each nodes
-        points_radius_0_4 = distribute_points_on_circle(0.4, 6, 0)
-        points_radius_0_8 = distribute_points_on_circle(0.8, G.number_of_nodes() - 6, 1.0 / 36.0)
-        all_points = points_radius_0_4 + points_radius_0_8
-
-        points_radius_0_3 = distribute_points_on_circle(0.3, 3, 0)
+        points_radius_0_3 = distribute_points_on_circle(0.3, 3, 1.0 / 3.0)
         points_radius_0_6 = distribute_points_on_circle(0.6, 5, 1.0 / 5.0)
-        points_radius_0_9 = distribute_points_on_circle(0.9, 10, 1.0 / 24.0)
+        points_radius_0_9 = distribute_points_on_circle(0.9, 10, 1 / 24.0)
         all_points = points_radius_0_3 + points_radius_0_6 + points_radius_0_9
 
         nodes = {}
